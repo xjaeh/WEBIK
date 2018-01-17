@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Main
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('mainroute') }}" method="post">
+        <fieldset>
+            <form>
+                <button class="btn btn-default" formaction="{{ url_for('registerroute') }}" type="register">Register</button>
+            </form>
+        </fieldset>
+    </form>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('profileroute') }}" method="post">
+        <fieldset>
+            <body>
+                Hier komt een profiel.
+            </body>
+        </fieldset>
+    </form>
+{% endblock %}

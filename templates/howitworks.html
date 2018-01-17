@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    How it works
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('howitworksroute') }}" method="post">
+        <fieldset>
+            <body>
+                Hier komt uitleg te staan.
+            </body>
+        </fieldset>
+    </form>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('accountroute') }}" method="post">
+        <fieldset>
+           <body>
+               Hier kan je je account aanpassen.
+           </body>
+        </fieldset>
+    </form>
+{% endblock %}
