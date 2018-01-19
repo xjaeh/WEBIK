@@ -80,5 +80,6 @@ def profileroute():
 @app.route("/account", methods=["GET", "POST"])
 #@login_required
 def accountroute():
+    account()
 
         return render_template("account.html")
