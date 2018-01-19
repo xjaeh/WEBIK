@@ -34,6 +34,8 @@ Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wi
 
 """
 def profile():
-    # if user submits a new profilepicture:
-        db.execute("UPDATE users SET profilepicture = :profilepicture WHERE id = :id" , \
-        profilepicture = request.form.get("profilepicture"), id = session["user_id"])
+    # if user submits a new profilepicture, update profile pic
+    
+    # if user submits a photo (or multiple) add picture to users row in the database
+    
+    
