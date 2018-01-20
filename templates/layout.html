@@ -10,11 +10,12 @@
 
         <!-- documentation at http://getbootstrap.com/, alternative themes at https://www.bootstrapcdn.com/bootswatch/ -->
         <link href="https://bootswatch.com/3/sandstone/bootstrap.min.css" rel="stylesheet"/>
-
+        <link href= "costum.css" rel="stylesheet" type="text/css"
         <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet"/>
 
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://bootswatch.com/3/sandstone/bootstrap.min.css"></script>
+
 
         <title>Tistacy {% block title %}{% endblock %}</title>
 
@@ -24,7 +25,7 @@
 
         <div class="container">
 
-            <nav class="navbar navbar-default margin: 0px auto">
+            <nav class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
                         <button aria-expanded="false" class="navbar-toggle collapsed" data-target="#navbar" data-toggle="collapse" type="button">
@@ -37,7 +38,7 @@
                     </div>
                     <div class="collapse navbar-collapse" id="navbar">
                         {% if session.user_id %}
-                            <ul class="nav navbar-nav">
+                            <ul class="nav navbar-nav ">
                                 <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
@@ -45,7 +46,7 @@
                                 <li><a href="{{ url_for('logoutroute') }}">Log Out</a></li>
                             </ul>
                         {% else %}
-                             <ul class="nav navbar-nav">
+                             <ul class="nav navbar-nav ">
                                 <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
@@ -63,7 +64,9 @@
                     </div>
                 </header>
             {% endif %}
-
+            <a name="myanchor">
+            <h1 style="padding-top: 150px; margin-top: -75px;"> </h1>
+            </a>
             <main>
                 {% block main %}{% endblock %}
             </main>

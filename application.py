@@ -1,4 +1,3 @@
-from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
@@ -6,10 +5,10 @@ from tempfile import mkdtemp
 from datetime import datetime
 
 from helpers import *
+from model import *
 
 # configure application
 app = Flask(__name__)
-db = SQL("sqlite:///WEBIK.db")
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -26,20 +25,24 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
-
 @app.route("/")
 def mainroute():
     return render_template("main.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def registerroute():
-    return render_template("register.html")
+    if request.method == "POST":
+        if request.form.get("work") == "I am a ...":
+            return apology("register.html","Please fill your profession in")
+
+        if request.form.get("search") == "I am looking for a ...":
+            return apology("Please fill in what you're looking for")
+        return render_template("workspace.html")
+    else:
+        return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def loginroute():
-
     return render_template("login.html")
 
 @app.route("/logout")
@@ -70,8 +73,9 @@ def findroute():
 @app.route("/profile", methods=["GET", "POST"])
 #@login_required
 def profileroute():
-
-        return render_template("profile.html")
+    # if user reached route via POST (as by submitting a form via POST)
+    pictures = profile()
+    return render_template("profile.html",pictures=pictures)
 
 @app.route("/account", methods=["GET", "POST"])
 #@login_required
@@ -80,3 +84,8 @@ def accountroute():
         account()
     else:
         return render_template("account.html")
+
+@app.route("/upload", methods=["GET", "POST"])
+#@login_required
+def uploadroute():
+    return render_template("upload.html")

@@ -7,8 +7,21 @@
 {% block main %}
     <form action="{{ url_for('registerroute') }}" method="post">
         <fieldset>
+            {% if bottom %}
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="bs-component">
+                        <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                         {% set bottom = bottom.replace("-"," ") %}
+                         {{bottom}} and try again!
+                    </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
             <div class="form-group">
-                <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text"/>
+                <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" />
             </div>
             <div class="form-group">
                 <input class="form-control" name="password" placeholder="Password" type="password"/>
@@ -22,28 +35,29 @@
             <div class="form-group">
                 <input class="form-control" name="email" placeholder="E-mailadress" type="text"/>
             </div>
-            <div class="dropdown" name="work">
-                <select>
-                    <option>I am a ...</option>
-                    <option>Photographer</option>
-                    <option>Model</option>
-                    <option>Mua(h)</option>
-                    <option>Producer</option>
-                </select>
-            </div>
-            <div class="dropdown" name="search">
-                <select>
-                    <option>I'm looking for a ...</option>
-                    <option>Photographer</option>
-                    <option>Model</option>
-                    <option>Mua(h)</option>
-                    <option>Producer</option>
-                </select>
-            </div>
+            <div class="form-group" >
+                    <div class="dropdown">
+                      <select class="form-control" name="work"">
+                        <option value="I am a ...">I am a ... </option>
+                        <option value="Photographer">Photographer</option>
+                        <option value="Model">Model</option>
+                        <option value="Mua(h)">Mua(h)</option>
+                        <option value="Producer">Producer</option>
+                      </select>
+            <br>
+            <div class="form-group" width=100%>
+                    <div class="dropdown" >
+                      <select class="form-control" name="search" >
+                        <option value="I am looking for a ...">I am looking for a ... </option>
+                        <option value="Photographer">Photographer</option>
+                        <option value="Model">Model</option>
+                        <option value="Mua(h)">Mua(h)</option>
+                        <option value="Producer">Producer</option>
+                      </select>
+            <br>
             <div class="form-group">
                 <button class="btn btn-default" type="submit">Register</button>
             </div>
-
         </fieldset>
     </form>
 {% endblock %}

@@ -1,3 +1,6 @@
+from cs50 import SQL
+
+db = SQL("sqlite:///WEBIK.db")
 
 def account():
     # let's the user change it's personal information
@@ -35,7 +38,7 @@ Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wi
 """
 def profile():
     # if user submits a new profilepicture, update profile pic
-    
+
     # if user submits a photo (or multiple) add picture to users row in the database
-    
-    
+
+    return db.execute("SELECT picture FROM pictures WHERE id=1")
