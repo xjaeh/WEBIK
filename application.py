@@ -64,8 +64,9 @@ def registerroute():
         if request.form.get("work") == "I am a ...":
             return apology("Please fill your profession in")
 
-        if request.form.get("search") == "I'm looking for a ...":
-            return apology("Please fill in what you're looking for")
+        if request.form.get("search") == "I am looking for a ...":
+            return apology("Please fill in what profession you're looking for")
+
 
         #inserting = db.execute("INSERT INTO users (username,hash,fullname) VALUES \
         #                        (:username, :hash, :fullname)", username = request.form.get("username"), \
@@ -79,7 +80,7 @@ def registerroute():
 
 
         #session = ["user_id"] = inserting
-        return redirect(url_for("workspaceroute"))
+        return render_template("workspace.html")
 
     else:
         return render_template("register.html")
@@ -96,9 +97,9 @@ def loginroute():
             return apology("Must provide username")
 
         elif not request.form.get("password"):
-            return apology("Must provide username")
+            return apology("Must provide valid password")
 
-        rows = ("SELECT * FROM users WHERE username =:username", username=request.form.get("username"))
+        #rows = ("SELECT * FROM users WHERE username =:username", username = request.form.get("username"))
 
         if len(rows) != 1 or not pwd_context.verify(request.form.get("password"), rows[0]["hash"]):
             return apology("Invalid username/password combination")
