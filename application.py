@@ -1,5 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from tempfile import mkdtemp
@@ -11,6 +11,10 @@ from model import *
 # configure application
 app = Flask(__name__)
 
+photos = UploadSet('photos', IMAGES)
+
+app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/'
+configure_uploads(app, photos)
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -149,17 +153,28 @@ def accountroute():
     else:
         return render_template("account.html")
 
+
 photos = UploadSet('photos', IMAGES)
 
 @app.route("/uploadroute", methods=["GET", "POST"])
 #@login_required
+#def uploadroute():
+#    if request.method == "POST" and 'photo' in request.files:
+#
+#        filename = photos.save(request.files['photo'])
+#        db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", picture = filename, id = session["user_id"])
+
+ #       return render_template("profile.html")
+
+@app.route("/upload", methods=["GET", "POST"])
+#@login_required
 def uploadroute():
-    if request.method == "POST" and 'photo' in request.files:
+    if request.method == "POST" and "photo"in request.files:
 
         filename = photos.save(request.files['photo'])
-        db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", picture = filename, id = session["user_id"])
-
-        return render_template("profile.html")
+        id = 2
+        upload(filename, id)
+        return redirect(url_for("profileroute"))
 
     else:
         return render_template("upload.html")
