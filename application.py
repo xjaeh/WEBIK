@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 photos = UploadSet('photos', IMAGES)
 
-app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/'
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
 configure_uploads(app, photos)
 
 # ensure responses aren't cached
