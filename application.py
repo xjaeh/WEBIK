@@ -1,4 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from tempfile import mkdtemp
@@ -9,6 +10,7 @@ from model import *
 
 # configure application
 app = Flask(__name__)
+
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -134,11 +136,30 @@ def profileroute():
 #@login_required
 def accountroute():
     if request.method == "POST":
-        account()
+        fullname = request.form.get("fullname")
+
+        if request.form.get("password") != request.form.get("confirmpassword"):
+            return apology("account.html","passwords don't match")
+        else:
+            password = request.form.get("password")
+
+        email = request.form.get("email")
+
+        account(fullname, password, email)
     else:
         return render_template("account.html")
 
+photos = UploadSet('photos', IMAGES)
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
+configure_uploads(app, photos)
 @app.route("/upload", methods=["GET", "POST"])
 #@login_required
 def uploadroute():
-    return render_template("upload.html")
+    if request.method == "POST":
+
+        filename = photos.save(request.files['photo'])
+        upload(filename)
+        return render_template("profile.html")
+
+    else:
+        return render_template("upload.html")
