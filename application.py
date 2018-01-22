@@ -134,11 +134,28 @@ def profileroute():
 #@login_required
 def accountroute():
     if request.method == "POST":
-        account()
+        fullname = request.form.get("fullname")
+
+        if request.form.get("password") != request.form.get("confirmpassword"):
+            return apology("account.html","passwords don't match")
+        else:
+            password = request.form.get("password")
+
+        email = request.form.get("email")
+
+        account(fullname, password, email)
     else:
-        return render_template("account.html")
 
 @app.route("/upload", methods=["GET", "POST"])
 #@login_required
 def uploadroute():
-    return render_template("upload.html")
+    if request.method == "POST":
+
+        url = request.form.get("url")
+        local_life = request.file("PLACHOLDER")
+
+        upload(url, local_file)
+        return render_template("profile.html")
+
+    else:
+        return render_template("upload.html")
