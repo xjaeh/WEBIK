@@ -9,14 +9,18 @@ def register(username, hash, fullname, work, search, email):
     users = db.execute("SELECT * FROM users")
     usernames = [user["username"] for user in users]
     emails = [user["email"] for user in users]
+
     if username in usernames:
         return 1
     if email in emails:
         return 2
 
-    inserting = db.execute("INSERT INTO users (username,hash,fullname, work, search, email) VALUES \
+    inserting = db.execute("INSERT INTO users (username, hash, fullname, work, search, email) VALUES \
                             (:username, :hash, :fullname, :work, :search, :email)", username = username, \
-                            hash=hash, fullname = fullname, work = work, search = search, email=email)
+                            hash = hash, fullname = fullname, work = work, search = search, email = email)
+
+    rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
+    return rows[0]["id"]
 
 def login(username, hash):
 
@@ -67,6 +71,7 @@ def profile():
 
     return db.execute("SELECT picture FROM pictures WHERE id=1")
 
-def upload(filename):
-    db.execute("INSERT INTO pictures (id, picture) VALUES(id=:id,picture=:picture)",id=session.get("user_id"), picture=filename)
+def upload(filename, id):
+    db.execute("INSERT INTO pictures (id, picture) VALUES(:id, :picture)",id=id, picture=filename)
     return filename
+

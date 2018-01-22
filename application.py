@@ -153,17 +153,15 @@ def accountroute():
     else:
         return render_template("account.html")
 
-photos = UploadSet('photos', IMAGES)
-app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
-configure_uploads(app, photos)
 @app.route("/upload", methods=["GET", "POST"])
 #@login_required
 def uploadroute():
-    if request.method == "POST":
+    if request.method == "POST" and "photo"in request.files:
 
         filename = photos.save(request.files['photo'])
-        upload(filename)
-        return render_template("profile.html")
+        id = 2
+        upload(filename, id)
+        return redirect(url_for("profileroute"))
 
     else:
         return render_template("upload.html")
