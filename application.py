@@ -1,4 +1,3 @@
-from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
@@ -6,10 +5,10 @@ from tempfile import mkdtemp
 from datetime import datetime
 
 from helpers import *
+from model import *
 
 # configure application
 app = Flask(__name__)
-db = SQL("sqlite:///WEBIK.db")
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -20,18 +19,11 @@ if app.config["DEBUG"]:
         response.headers["Pragma"] = "no-cache"
         return response
 
-# custom filter
-app.jinja_env.filters["usd"] = usd
-
 # configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-# configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
-
 
 @app.route("/")
 def mainroute():
@@ -110,6 +102,7 @@ def loginroute():
     else:
         return render_template("login.html")
 
+
 @app.route("/logout")
 def logoutroute():
     """Log user out."""
@@ -138,11 +131,19 @@ def findroute():
 @app.route("/profile", methods=["GET", "POST"])
 #@login_required
 def profileroute():
-
-        return render_template("profile.html")
+    # if user reached route via POST (as by submitting a form via POST)
+    pictures = profile()
+    return render_template("profile.html",pictures=pictures)
 
 @app.route("/account", methods=["GET", "POST"])
 #@login_required
 def accountroute():
-
+    if request.method == "POST":
+        account()
+    else:
         return render_template("account.html")
+
+@app.route("/upload", methods=["GET", "POST"])
+#@login_required
+def uploadroute():
+    return render_template("upload.html")

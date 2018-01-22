@@ -7,11 +7,12 @@
 {% block main %}
     <form action="{{ url_for('workspaceroute') }}" method="post">
         <fieldset>
-            <form>
-                <button class="btn btn-default" formaction="{{ url_for('findroute') }}" type="Find your match"> Find match</button>
-                <button class="btn btn-default" formaction="{{ url_for('profileroute') }}" type="Profile"> Profile</button>
-                <button class="btn btn-default" formaction="{{ url_for('accountroute') }}" type="Account"> Account </button>
-            </form>
+            <p align="center">
+                <form>
+                    <button class="btn btn-default" formaction="{{ url_for('findroute') }}" formmethod="get" type="Find your match"> Find match</button>
+                    <button class="btn btn-default" formaction="{{ url_for('profileroute') }}" formmethod="get" type="Profile"> Profile</button>
+                    <button class="btn btn-default" formaction="{{ url_for('accountroute') }}" formmethod="get" type="Account"> Account </button>
+                </form>
         </fieldset>
     </form>
 {% endblock %}
