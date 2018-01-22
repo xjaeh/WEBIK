@@ -66,8 +66,8 @@ def registerroute():
             return apology("register.html", "Username already exist")
         if check == 2:
             return apology("register.html", "Email already exist")
-
-        session["user_id"] = rows[0]["id"]
+        else:
+            session["user_id"] = check
         return render_template("workspace.html")
     else:
         return render_template("register.html")
