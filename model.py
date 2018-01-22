@@ -1,6 +1,7 @@
 from cs50 import SQL
 from passlib.apps import custom_app_context as pwd_context
-
+from flask_session import Session
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 db = SQL("sqlite:///WEBIK.db")
 
 def register(username, hash, fullname, work, search, email):

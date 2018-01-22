@@ -1,5 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from tempfile import mkdtemp
@@ -11,6 +11,10 @@ from model import *
 # configure application
 app = Flask(__name__)
 
+photos = UploadSet('photos', IMAGES)
+
+app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/'
+configure_uploads(app, photos)
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
