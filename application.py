@@ -153,6 +153,19 @@ def accountroute():
     else:
         return render_template("account.html")
 
+
+photos = UploadSet('photos', IMAGES)
+
+@app.route("/uploadroute", methods=["GET", "POST"])
+#@login_required
+#def uploadroute():
+#    if request.method == "POST" and 'photo' in request.files:
+#
+#        filename = photos.save(request.files['photo'])
+#        db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", picture = filename, id = session["user_id"])
+
+ #       return render_template("profile.html")
+
 @app.route("/upload", methods=["GET", "POST"])
 #@login_required
 def uploadroute():

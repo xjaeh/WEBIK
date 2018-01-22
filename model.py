@@ -71,7 +71,9 @@ def profile():
 
     return db.execute("SELECT picture FROM pictures WHERE id=1")
 
-def upload(filename, id):
-    db.execute("INSERT INTO pictures (id, picture) VALUES(:id, :picture)",id=id, picture=filename)
-    return filename
+def upload(filename):
+
+    db.execute("INSERT INTO pictures (id, picture) VALUES (id=:id,picture=:picture)",id=session.get("user_id"), picture=filename)
+
+
 
