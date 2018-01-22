@@ -73,7 +73,7 @@ def profile():
 
 def upload(filename, id):
 
-    db.execute("INSERT INTO pictures (id, picture) VALUES (id=:id,picture=:picture)",id=id, picture=filename)
+    db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
 
 
 

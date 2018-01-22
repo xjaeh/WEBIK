@@ -172,7 +172,7 @@ def uploadroute():
     if request.method == "POST" and "photo"in request.files:
 
         filename = photos.save(request.files['photo'])
-        session["user_id"] = id
+        id = 2
         upload(filename, id)
         return redirect(url_for("profileroute"))
 
