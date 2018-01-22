@@ -39,12 +39,75 @@ def mainroute():
 
 @app.route("/register", methods=["GET", "POST"])
 def registerroute():
-    return render_template("register.html")
+
+    if request.method == "POST":
+
+        # Ensure username, password and password confirmation are filled in, otherwise apology
+        if not request.form.get("username"):
+            return apology("Please fill in an username")
+
+        if not request.form.get("password"):
+            return apology("Password is required for registration")
+
+        if not request.form.get("confirmpassword"):
+            return apology("You must provide password confirmation")
+
+        if request.form.get("password") != request.form.get("confirmpassword"):
+            return apology("Passwords do not match, try again")
+
+        if not request.form.get("fullname") or " " not in request.form.get("fullname"):
+            return apology("Please fill in your first and last name")
+
+        if not request.form.get("email") or "@" not in request.form.get("email") or "." not in request.form.get("email"):
+            return apology("Please fill in a valid email address")
+
+        if request.form.get("work") == "I am a ...":
+            return apology("Please fill your profession in")
+
+        if request.form.get("search") == "I'm looking for a ...":
+            return apology("Please fill in what you're looking for")
+
+        #inserting = db.execute("INSERT INTO users (username,hash,fullname) VALUES \
+        #                        (:username, :hash, :fullname)", username = request.form.get("username"), \
+        #                        hash=pwd_context.hash(request.form.get("password")), fullname = request.form.get("fullname"))
+        #if not inserting:
+        #    return apology("Username already exist, please fill in another one")
+
+        #insertemail = db.execute("INSERT INTO users (email) VALUES (:email)", email = request.form.get("email"))
+        #if not insertemail:
+        #    return apology("Email already exist, please fill in another one")
+
+
+        #session = ["user_id"] = inserting
+        return redirect(url_for("workspaceroute"))
+
+    else:
+        return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def loginroute():
 
-    return render_template("login.html")
+    session.clear()
+
+    if request.method == "POST":
+
+        # Ensure username is submitted
+        if not request.form.get("username"):
+            return apology("Must provide username")
+
+        elif not request.form.get("password"):
+            return apology("Must provide username")
+
+        rows = ("SELECT * FROM users WHERE username =:username", username=request.form.get("username"))
+
+        if len(rows) != 1 or not pwd_context.verify(request.form.get("password"), rows[0]["hash"]):
+            return apology("Invalid username/password combination")
+
+        session["user_id"] = rows[0]["id"]
+        return redirect(url_for("workspaceroute"))
+
+    else:
+        return render_template("login.html")
 
 @app.route("/logout")
 def logoutroute():
