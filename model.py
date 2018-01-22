@@ -59,9 +59,13 @@ def account():
     Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wijzigen.
 
     """
-    def profile():
-        # if user submits a new profilepicture, update profile pic
+def profile():
+    # if user submits a new profilepicture, update profile pic
 
-        # if user submits a photo (or multiple) add picture to users row in the database
+    # if user submits a photo (or multiple) add picture to users row in the database
 
-        return db.execute("SELECT picture FROM pictures WHERE id=1")
+    return db.execute("SELECT picture FROM pictures WHERE id=1")
+
+def upload(filename):
+    db.execute("INSERT INTO pictures (id, picture) VALUES(id=:id,picture=:picture)",id=session.get("user_id"), picture=filename)
+    return filename

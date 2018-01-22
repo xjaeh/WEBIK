@@ -1,4 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from tempfile import mkdtemp
@@ -9,6 +10,7 @@ from model import *
 
 # configure application
 app = Flask(__name__)
+
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -66,8 +68,8 @@ def registerroute():
             return apology("register.html", "Username already exist")
         if check == 2:
             return apology("register.html", "Email already exist")
-
-        session["user_id"] = rows[0]["id"]
+        else:
+            session["user_id"] = check
         return render_template("workspace.html")
     else:
         return render_template("register.html")
@@ -145,16 +147,18 @@ def accountroute():
 
         account(fullname, password, email)
     else:
+        return render_template("account.html")
 
+photos = UploadSet('photos', IMAGES)
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
+configure_uploads(app, photos)
 @app.route("/upload", methods=["GET", "POST"])
 #@login_required
 def uploadroute():
     if request.method == "POST":
 
-        url = request.form.get("url")
-        local_life = request.file("PLACHOLDER")
-
-        upload(url, local_file)
+        filename = photos.save(request.files['photo'])
+        upload(filename)
         return render_template("profile.html")
 
     else:
