@@ -28,7 +28,7 @@ def login(username, hash):
     if len(rows) != 1 or not pwd_context.verify(hash, rows[0]["hash"]):
         return False
     else:
-        return id
+        return rows[0]["id"]
 
 def account():
     # let's the user change it's personal information
@@ -64,16 +64,20 @@ def account():
     Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wijzigen.
 
     """
-def profile():
+def profile(id):
     # if user submits a new profilepicture, update profile pic
 
     # if user submits a photo (or multiple) add picture to users row in the database
 
-    return db.execute("SELECT picture FROM pictures WHERE id=1")
+    return db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
 
 def upload(filename, id):
 
     db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
 
+def find(id):
+    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
+    search = rows[0]["search"]
+    possible_matches = db.execute("SELECT * FROM users WHERE work=:search", search=search)
 
 

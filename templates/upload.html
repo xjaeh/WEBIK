@@ -8,8 +8,19 @@
     <form action="{{ url_for('uploadroute') }}" method="post" enctype=multipart/form-data>
         <fieldset>
             <body>
-                <input type=file name=photo>
-                <input type="submit">
+                <h2> Photo from the computer</h2>
+                <input class="btn btn-default" type=file name=photo>
+                <br>
+                <input class="btn btn-default" type="submit" >
+                <br>
+                <h1> OR</h1>
+                <h2> Photo from the internet</h2>
+                <div class="form-group">
+                <input autocomplete="off" autofocus class="form-control" name="url" placeholder=" URL photo" type="text" />
+                </div>
+                <div class="form-group">
+                <button class="btn btn-default" type="submit">Upload photo</button>
+                </div>
             </body>
         </fieldset>
     </form>

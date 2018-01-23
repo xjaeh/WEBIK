@@ -126,14 +126,19 @@ def howitworksroute():
 @app.route("/find", methods=["GET", "POST"])
 #@login_required
 def findroute():
+    id = session.get("user_id")
+    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
+    work = rows[0][""]
+    pictures = profile(id)
+    return render_template("find.html",pictures=pictures)
 
-        return render_template("find.html")
 
 @app.route("/profile", methods=["GET", "POST"])
 #@login_required
 def profileroute():
     # if user reached route via POST (as by submitting a form via POST)
-    pictures = profile()
+    id = session.get("user_id")
+    pictures = profile(id)
     return render_template("profile.html",pictures=pictures)
 
 @app.route("/account", methods=["GET", "POST"])
@@ -153,26 +158,15 @@ def accountroute():
     else:
         return render_template("account.html")
 
-
-photos = UploadSet('photos', IMAGES)
-
-@app.route("/uploadroute", methods=["GET", "POST"])
-#@login_required
-#def uploadroute():
-#    if request.method == "POST" and 'photo' in request.files:
-#
-#        filename = photos.save(request.files['photo'])
-#        db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", picture = filename, id = session["user_id"])
-
- #       return render_template("profile.html")
-
 @app.route("/upload", methods=["GET", "POST"])
 #@login_required
 def uploadroute():
     if request.method == "POST" and "photo"in request.files:
-
-        filename = photos.save(request.files['photo'])
-        id = 2
+        if request.form.get("url"):
+            filename = request.form.get("url")
+        else:
+            filename = photos.save(request.files['photo'])
+        id = session.get("user_id")
         upload(filename, id)
         return redirect(url_for("profileroute"))
 
