@@ -140,16 +140,33 @@ def profileroute():
 #@login_required
 def accountroute():
     if request.method == "POST":
+
         fullname = request.form.get("fullname")
 
-        if request.form.get("password") != request.form.get("confirmpassword"):
-            return apology("account.html","passwords don't match")
-        else:
-            password = request.form.get("password")
+        password = request.form.get("password")
+        if request.form.get("old password") and request.form.get("password") and request.form.get("confirmpassword"):
+            rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
+            if pwd_context.verify(request.form.get("old password"), rows[0]["hash"]):
+                if request.form.get("password") != request.form.get("confirmpassword"):
+                    return apology("account.html","passwords don't match")
+                password = request.form.get("new password")
+            else:
+                return apology("account.html", "old password not correct")
+        password = request.form.get("password")
 
+        if request.form.get("email"):
+            if "@" not in request.form.get("email") or "." not in request.form.get("email"):
+                return apology("please fill in a valid email adress")
         email = request.form.get("email")
 
-        account(fullname, password, email)
+        work = request.form.get("work")
+
+        search = request.form.get("search")
+
+        account(fullname, password, email, work, search)
+
+        return redirect(url_for("workspaceroute"))
+
     else:
         return render_template("account.html")
 
