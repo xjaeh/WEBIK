@@ -147,6 +147,7 @@ def profileroute():
 def accountroute():
 
     if request.method == "POST":
+
         fullname = request.form.get("fullname")
         password = request.form.get("password")
         if request.form.get("old password") and request.form.get("password") and request.form.get("confirmpassword"):
@@ -176,7 +177,6 @@ def accountroute():
         return render_template("account.html")
 
 
-photos = UploadSet('photos', IMAGES)
 @app.route("/upload", methods=["GET", "POST"])
 @login_required
 def uploadroute():

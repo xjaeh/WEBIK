@@ -28,7 +28,7 @@ def login(username, hash):
     if len(rows) != 1 or not pwd_context.verify(hash, rows[0]["hash"]):
         return False
     else:
-        return id
+        return rows[0]["id"]
 
 def account(fullname, password, email, work, search):
     # let's the user change it's personal information
@@ -72,7 +72,12 @@ def profile(id):
 
 def upload(filename, id):
 
-    db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)",id=id, picture=filename)
+    db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
+
+def find(id):
+    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
+    search = rows[0]["search"]
+    possible_matches = db.execute("SELECT * FROM users WHERE work=:search", search=search)
 
 def delete(filename, id):
 

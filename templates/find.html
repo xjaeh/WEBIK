@@ -8,7 +8,22 @@
     <form action="{{ url_for('findroute') }}" method="post">
         <fieldset>
             <body>
-                Hier komt Tinder.
+                <p align="center">
+                <form  >
+                    <button style="width:300px" class="btn btn-danger" formaction="{{ url_for('findroute') }}" formmethod="get" > DISLIKE </button>
+                    <button style="width:300px" class="btn btn-success" formaction="{{ url_for('findroute') }}" formmethod="get" > LIKE </button>
+                </form>
+                    <div class="gallery">
+                        {% for picture in pictures %}
+                        <a>
+                            {% if (picture.picture).startswith("http") or (picture.picture).startswith("data") %}
+                            <img src="{{picture.picture}}" width="375" height="250" style="padding:5px">
+                            {% else %}
+                            <img src="static/img/{{picture.picture}}" width="375" height="250" style="padding:5px">
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                </div>
             </body>
         </fieldset>
     </form>
