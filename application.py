@@ -115,7 +115,7 @@ def logoutroute():
     return redirect(url_for("mainroute"))
 
 @app.route("/workspace", methods=["GET", "POST"])
-#@login_required
+@login_required
 def workspaceroute():
     return render_template("workspace.html")
 
@@ -124,57 +124,84 @@ def howitworksroute():
     return render_template("howitworks.html")
 
 @app.route("/find", methods=["GET", "POST"])
-#@login_required
+@login_required
 def findroute():
+    id = session.get("user_id")
+    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
+    work = rows[0][""]
+    pictures = profile(id)
+    return render_template("find.html",pictures=pictures)
 
-        return render_template("find.html")
 
 @app.route("/profile", methods=["GET", "POST"])
-#@login_required
+@login_required
 def profileroute():
     # if user reached route via POST (as by submitting a form via POST)
-    pictures = profile()
+    id = session.get("user_id")
+    pictures = profile(id)
     return render_template("profile.html",pictures=pictures)
 
+
 @app.route("/account", methods=["GET", "POST"])
-#@login_required
+@login_required
 def accountroute():
+
     if request.method == "POST":
         fullname = request.form.get("fullname")
+        password = request.form.get("password")
+        if request.form.get("old password") and request.form.get("password") and request.form.get("confirmpassword"):
+            rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
+            if pwd_context.verify(request.form.get("old password"), rows[0]["hash"]):
+                if request.form.get("password") != request.form.get("confirmpassword"):
+                    return apology("account.html","passwords don't match")
+                password = request.form.get("new password")
+            else:
+                return apology("account.html", "old password not correct")
+        password = request.form.get("password")
 
-        if request.form.get("password") != request.form.get("confirmpassword"):
-            return apology("account.html","passwords don't match")
-        else:
-            password = request.form.get("password")
-
+        if request.form.get("email"):
+            if "@" not in request.form.get("email") or "." not in request.form.get("email"):
+                return apology("please fill in a valid email adress")
         email = request.form.get("email")
 
-        account(fullname, password, email)
+        work = request.form.get("work")
+
+        search = request.form.get("search")
+
+        account(fullname, password, email, work, search)
+
+        return redirect(url_for("workspaceroute"))
+
     else:
         return render_template("account.html")
 
 
 photos = UploadSet('photos', IMAGES)
-
-@app.route("/uploadroute", methods=["GET", "POST"])
-#@login_required
-#def uploadroute():
-#    if request.method == "POST" and 'photo' in request.files:
-#
-#        filename = photos.save(request.files['photo'])
-#        db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", picture = filename, id = session["user_id"])
-
- #       return render_template("profile.html")
-
 @app.route("/upload", methods=["GET", "POST"])
-#@login_required
+@login_required
 def uploadroute():
-    if request.method == "POST" and "photo"in request.files:
 
-        filename = photos.save(request.files['photo'])
-        session["user_id"] = id
+    if request.method == "POST" and "photo"in request.files:
+        if request.form.get("url"):
+            filename = request.form.get("url")
+        else:
+            filename = photos.save(request.files['photo'])
+        id = session.get("user_id")
         upload(filename, id)
         return redirect(url_for("profileroute"))
 
     else:
         return render_template("upload.html")
+
+@app.route("/delete", methods=["GET", "POST"])
+@login_required
+def deleteroute():
+
+    rows = db.execute("SELECT * FROM pictures WHERE id=:id", id=1 )
+
+    if request.method == "POST":
+        db.execute("DELETE FROM pictures WHERE picture = :picture", picture = request.form.get("delete"))
+
+        return redirect(url_for("profileroute"))
+    else:
+        return render_template("delete.html", rows=rows)

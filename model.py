@@ -30,50 +30,51 @@ def login(username, hash):
     else:
         return id
 
-def account():
+def account(fullname, password, email, work, search):
     # let's the user change it's personal information
 
     # changes users full name if the user submitted one
-    if request.form.get("fullname"):
+    if fullname:
         db.execute("UPDATE users SET fullname = :fullname WHERE id = :id" , \
-        fullname = request.form.get("fullname"), id = session["user_id"], )
+        fullname = fullname, id = id, )
 
     # changes the password if the user submitted one
-    if request.form.get("password"):
-        # checks if the password and passwordconfirmation are the same
-        if request.form.get("password") != request.form.get("confirmpassword"):
-            apology("passwords don't match")
-        else:
-            # changes the users full name in the database
-            db.execute("UPDATE users SET hash = :hash WHERE id = :id" , \
-            hash = pwd_contect.hash(request.form.get("password")), id = session["user_id"], )
+    if password:
+        #v changes the users full name in the database
+        db.execute("UPDATE users SET hash = :hash WHERE id = :id" , \
+        hash = pwd_context.hash(password), id=id, )
 
     # changes the users email if the user submitted one
-    if request.form.get("email"):
+    if email:
         db.execute("UPDATE users SET email = :email WHERE id = :id" , \
-        email = request.form.get("email"), id = session["user_id"], )
+        email = email, id = id, )
 
      # changes the users profession is the user submitted one
-    if request.form.get("PLACEHOLDER"):
-        db.execute("UPDATE users SET PLACEHOLDER = :PLACEHOLDER WHERE id = :id" , \
-        fullname = request.form.get("PLACEHOLDER"), id = session["user_id"], )
+    if work:
+        db.execute("UPDATE users SET work = :work WHERE id = :id" , \
+        work = work, id = id, )
 
+    if search:
+        db.execute("UPDATE users SET search = :searcg WHERE id = :id" , \
+        search = search, id = id, )
     """
     Functie: profile(id):
     	returned Profile of None
     Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wijzigen.
 
     """
-def profile():
+def profile(id):
     # if user submits a new profilepicture, update profile pic
 
     # if user submits a photo (or multiple) add picture to users row in the database
 
-    return db.execute("SELECT picture FROM pictures WHERE id=1")
+    return db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
 
 def upload(filename, id):
 
-    db.execute("INSERT INTO pictures (id, picture) VALUES (id=:id,picture=:picture)",id=id, picture=filename)
+    db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)",id=id, picture=filename)
 
+def delete(filename, id):
 
-
+    show = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
+    db.execute("DELETE FROM pictures WHERE picture=:picture, username=:username", picture=picture, username=username)
