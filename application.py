@@ -200,11 +200,12 @@ def uploadroute():
 @login_required
 def deleteroute():
 
-    rows = db.execute("SELECT * FROM pictures WHERE id=:id", id=1 )
+    id = session.get("user_id")
+    picture = request.form.get("delete")
+    selection = select(id)
 
     if request.method == "POST":
-        db.execute("DELETE FROM pictures WHERE picture = :picture", picture = request.form.get("delete"))
-
+        delete(picture, id)
         return redirect(url_for("profileroute"))
     else:
-        return render_template("delete.html", rows=rows)
+        return render_template("delete.html", rows = selection)
