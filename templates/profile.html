@@ -13,11 +13,6 @@
                         <a href="{{ url_for('uploadroute') }}"  class="btn btn-default btn-lg btn-block"> Add image</a>
                     </p>
                 </form>
-                <form>
-                    <p class="bs-component">
-                        <a href="{{ url_for('deleteroute') }}"  class="btn btn-default btn-lg btn-block"> Delete image</a>
-                    </p>
-                </form>
                     <div class="gallery">
                         {% for picture in pictures %}
                         <a>
