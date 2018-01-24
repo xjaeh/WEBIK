@@ -113,8 +113,11 @@ def statusupdate(id,otherid,status):
 def statuscheck(id, otherid):
     option1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=id, otherid=otherid)
     option2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=otherid, otherid=id)
-    if option1 == "true" and option2 == "true":
+    try:
+        option1[0]["status"] == "true" and option2[0]["status"] == "true"
         return True
+    except:
+        return False
 
 def password_generator(chars=string.ascii_uppercase + string.digits):
     # generate a random password with length 10, containing capital letters and numbers
@@ -156,12 +159,12 @@ def inform_match(id1, id2):
     subject = "You got a match"
 
     # creates a seperate user for each person
-    text1 = "Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress: {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy".format(matchinfo[0]["fullname"], \
-        userinfo[0]["fullname"], userinfo["email"])
+    text1 = "Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress: {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy".format(userinfo[0]["fullname"], \
+        matchinfo[0]["fullname"], userinfo[0]["email"])
     message1 = 'Subject: {}\n\n{}'.format(subject, text1)
 
-    text2 = "Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress: {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy".format(userinfo[0]["fullname"], \
-        matchinfoinfo[0]["fullname"], matchinfo["email"])
+    text2 = "Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress: {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy".format(matchinfo[0]["fullname"], \
+        userinfo[0]["fullname"], matchinfo[0]["email"])
     message2 = 'Subject: {}\n\n{}'.format(subject, text2)
 
     server.login("tistacyhelpdesk@gmail.com", "webiktistacy")

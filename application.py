@@ -139,6 +139,9 @@ def findroute():
         if reject:
             status= "false"
         statusupdate(id,finding,status)
+        check = statuscheck(id,finding)
+        if check == True:
+            inform_match(id,finding)
 
         return redirect(url_for("findroute"))
     else:
@@ -161,7 +164,6 @@ def profileroute():
 @login_required
 def accountroute():
     # let's the user change his/her personel information
-    if request.method == "POST":
 
     if request.method == "POST":
 
