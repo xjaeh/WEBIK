@@ -146,7 +146,7 @@ def profileroute():
 @login_required
 def accountroute():
 
-    if request.method == "POST":
+     if request.method == "POST":
 
         fullname = request.form.get("fullname")
         password = request.form.get("password")
@@ -163,15 +163,18 @@ def accountroute():
         if request.form.get("email"):
             if "@" not in request.form.get("email") or "." not in request.form.get("email"):
                 return apology("please fill in a valid email adress")
+
         email = request.form.get("email")
 
-        work = request.form.get("work")
+        errorcode = account(fullname, request.form.get("old password"), request.form.get("password"), \
+        request.form.get("confirmpassword"), email, request.form.get("work"), request.form.get("search"))
 
-        search = request.form.get("search")
-
-        account(fullname, password, email, work, search)
-
-        return redirect(url_for("workspaceroute"))
+        if errorcode == 0:
+            return apology("account.html", "please fill in old password, new pasword and confirm password")
+        if errorcode == 1:
+            return apology("account.html", "old password invalid")
+        else:
+            return redirect(url_for("workspaceroute"))
 
     else:
         return render_template("account.html")
