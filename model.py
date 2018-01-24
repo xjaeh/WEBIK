@@ -76,8 +76,9 @@ def upload(filename, id):
     db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
 
 def find(id):
-    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
+    rows = db.execute("SELECT * FROM users WHERE id=:id", id=id)
     search = rows[0]["search"]
     possible_matches = db.execute("SELECT * FROM users WHERE work=:search", search=search)
+
 
 
