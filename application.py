@@ -53,7 +53,7 @@ def registerroute():
         if request.form.get("password") != request.form.get("confirmpassword"):
             return apology("register.html","Passwords do not match, try again")
 
-        if not request.form.get("fullname") or " " not in request.form.get("fullname"):
+        if not request.form.get("fullname") or " " not in request.form.get("fullname") or not request.form.get("fullname").isalpha():
             return apology("register.html","Please fill in your first and last name")
 
         if not request.form.get("email") or "@" not in request.form.get("email") or "." not in request.form.get("email"):
