@@ -68,9 +68,9 @@ def registerroute():
         check = register(request.form.get("username"), pwd_context.hash(request.form.get("password")), request.form.get("fullname"), \
                 request.form.get("work"), request.form.get("search"), request.form.get("email"))
 
-        if check == 1:
+        if check == "x":
             return apology("register.html", "Username already exist")
-        if check == 2:
+        if check == "y":
             return apology("register.html", "Email already exist")
         else:
             session["user_id"] = check
@@ -127,7 +127,7 @@ def howitworksroute():
 @login_required
 def findroute():
     id = session.get("user_id")
-    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
+    rows = db.execute("SELECT * FROM users WHERE id=:id", id=id)
     work = rows[0][""]
     pictures = profile(id)
     return render_template("find.html",pictures=pictures)
@@ -146,7 +146,7 @@ def profileroute():
 @login_required
 def accountroute():
 
-     if request.method == "POST":
+    if request.method == "POST":
 
         fullname = request.form.get("fullname")
         password = request.form.get("password")

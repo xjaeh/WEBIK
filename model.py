@@ -11,13 +11,13 @@ def register(username, hash, fullname, work, search, email):
     emails = [user["email"] for user in users]
 
     if username in usernames:
-        return 1
-    if email in emails:
-        return 2
-
-    inserting = db.execute("INSERT INTO users (username, hash, fullname, work, search, email) VALUES \
-                            (:username, :hash, :fullname, :work, :search, :email)", username = username, \
-                            hash = hash, fullname = fullname, work = work, search = search, email = email)
+        return x
+    elif email in emails:
+        return y
+    else:
+        db.execute("INSERT INTO users (username, hash, fullname, work, search, email) VALUES \
+                   (:username, :hash, :fullname, :work, :search, :email)", username = username, \
+                    hash = hash, fullname = fullname, work = work, search = search, email = email)
 
     rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
     return rows[0]["id"]
@@ -64,12 +64,8 @@ def account(fullname, password, email, work, search):
     if search:
         db.execute("UPDATE users SET search = :search WHERE id = :id" , \
         search = search, id = session["user_id"], )
-    """
-    Functie: profile(id):
-    	returned Profile of None
-    Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wijzigen.
 
-    """
+
 def profile(id):
     # if user submits a new profilepicture, update profile pic
 
