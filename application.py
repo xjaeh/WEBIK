@@ -209,3 +209,25 @@ def deleteroute():
         return redirect(url_for("profileroute"))
     else:
         return render_template("delete.html", rows = selection)
+
+@app.route("/forgotpassword", methods=["GET", "POST"])
+def forgotpasswordroute():
+    if request.method == "POST":
+        if not request.form.get("username") or not request.form.get("email"):
+            return apology("forgotpassword.html", "please fill in all fields")
+        else:
+            errorcode = retrievepassword(request.form.get("username"), request.form.get("email"))
+
+        if errorcode == 0:
+            return apology("forgotpassword.html", "username incorrect")
+        if errorcode == 1:
+            return apology("forgotpassword.html", "email incorrect")
+        else:
+            return redirect(url_for("email_sentroute"))
+
+    else:
+        return render_template("forgotpassword.html")
+
+@app.route("/email_sent", methods=["GET", "POST"])
+def email_sentroute():
+    return render_template("email_sent.html")

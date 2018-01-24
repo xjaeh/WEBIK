@@ -91,3 +91,32 @@ def delete(picture, id):
 
     return db.execute("DELETE FROM pictures WHERE picture = :picture", picture = picture)
 
+def password_generator(chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for i in range(10))
+
+def retrievepassword(username, email):
+
+    rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
+    if not rows:
+         return 0
+    else:
+        if email != rows[0]["email"]:
+            return 1
+        else:
+            # generate new password
+            password = password_generator()
+
+            # change password in database
+            db.execute("UPDATE users SET hash =:hash WHERE username =:username" , \
+                    hash = pwd_context.hash(password), username = username, )
+
+            #send new password to user
+            server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+
+            subject = "Forgot password"
+            text = "Hello, {}!\n\n your new password is: \n\n {} \n\n you can now use this password to log into your account.".format(rows[0]["fullname"], password)
+
+        message = 'Subject: {}\n\n{}'.format(subject, text)
+
+        server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+        server.sendmail("tistacyhelpdesk@gmail.com", email, message)
