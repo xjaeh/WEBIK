@@ -31,32 +31,39 @@ def login(username, hash):
         return rows[0]["id"]
 
 def account(fullname, password, email, work, search):
-    # let's the user change it's personal information
+    # let's the user change his/her personal information
 
     # changes users full name if the user submitted one
     if fullname:
         db.execute("UPDATE users SET fullname = :fullname WHERE id = :id" , \
-        fullname = fullname, id = id, )
+        fullname = fullname, id = session["user_id"], )
 
-    # changes the password if the user submitted one
-    if password:
-        #v changes the users full name in the database
-        db.execute("UPDATE users SET hash = :hash WHERE id = :id" , \
-        hash = pwd_context.hash(password), id=id, )
+    # changes the password if the user submitted a valid oldpassword, and a new password and a passwordconfirmation
+    if password or confirmpassword or oldpassword:
+        if not oldpassword or not password or not confirmpassword:
+            return 0
+        else:
+            rows = db.execute("SELECT * FROM users WHERE id=:id", id= session["user_id"])
+            if pwd_context.verify(oldpassword, rows[0]["hash"]) == False:
+                return 1
+            else:
+                db.execute("UPDATE users SET hash = :hash WHERE id = :id" , \
+                    hash = pwd_context.hash(password), id = session["user_id"], )
 
     # changes the users email if the user submitted one
     if email:
         db.execute("UPDATE users SET email = :email WHERE id = :id" , \
-        email = email, id = id, )
+        email = email, id = session["user_id"], )
 
      # changes the users profession is the user submitted one
     if work:
         db.execute("UPDATE users SET work = :work WHERE id = :id" , \
-        work = work, id = id, )
+        work = work, id = session["user_id"], )
 
+    # changes the users _____ if the user submitted one
     if search:
-        db.execute("UPDATE users SET search = :searcg WHERE id = :id" , \
-        search = search, id = id, )
+        db.execute("UPDATE users SET search = :search WHERE id = :id" , \
+        search = search, id = session["user_id"], )
     """
     Functie: profile(id):
     	returned Profile of None
