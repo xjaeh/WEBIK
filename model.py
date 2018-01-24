@@ -1,8 +1,10 @@
+import random
 from cs50 import SQL
 from passlib.apps import custom_app_context as pwd_context
 from flask_session import Session
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 db = SQL("sqlite:///WEBIK.db")
+
 
 def register(username, hash, fullname, work, search, email):
 
@@ -20,6 +22,7 @@ def register(username, hash, fullname, work, search, email):
                             hash = hash, fullname = fullname, work = work, search = search, email = email)
 
     rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
+    id = rows[0]["id"]
     return rows[0]["id"]
 
 def login(username, hash):
@@ -64,12 +67,7 @@ def account(fullname, password, email, work, search):
     if search:
         db.execute("UPDATE users SET search = :search WHERE id = :id" , \
         search = search, id = session["user_id"], )
-    """
-    Functie: profile(id):
-    	returned Profile of None
-    Beschrijving: bewerken van profiel zoals plaatsen van foto’s en profielfoto wijzigen.
 
-    """
 def profile(id):
     # if user submits a new profilepicture, update profile pic
 
@@ -82,9 +80,17 @@ def upload(filename, id):
     db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
 
 def find(id):
-    rows = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    search = rows[0]["search"]
-    possible_matches = db.execute("SELECT * FROM users WHERE work=:search", search=search)
+    search = db.execute("SELECT search FROM users WHERE id=:id", id=id)
+    possible_matches = db.execute("SELECT id FROM users WHERE work=:search", search=search[0]["search"])
+    possible_matchesset = set(match["id"] for match in possible_matches)
+    alreadyseen= db.execute("SELECT otherid FROM matchstatus WHERE id=:id", id=id)
+    alreadyseenset= set(already["otherid"] for already in alreadyseen)
+    show = possible_matchesset - alreadyseenset
+    shows = [id for id in show]
+    if shows == []:
+        return 'empty'
+    else:
+        return random.choice(shows)
 
 def select(id):
 
@@ -94,4 +100,13 @@ def select(id):
 def delete(picture, id):
 
     return db.execute("DELETE FROM pictures WHERE picture = :picture", picture = picture)
+
+def statusupdate(id,otherid,status):
+    db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)", id=id, otherid=otherid, status=status)
+
+def statuscheck(id, otherid):
+    option1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=id, otherid=otherid)
+    option2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=otherid, otherid=id)
+    if option1 == "true" and option2 == "true":
+        return True
 

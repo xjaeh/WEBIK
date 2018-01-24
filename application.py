@@ -126,11 +126,26 @@ def howitworksroute():
 @app.route("/find", methods=["GET", "POST"])
 @login_required
 def findroute():
+    status = "temporary"
     id = session.get("user_id")
-    rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
-    work = rows[0][""]
-    pictures = profile(id)
-    return render_template("find.html",pictures=pictures)
+    finding=find(id)
+
+    if request.method == "POST":
+
+        accept = request.form.get('accept')
+        reject = request.form.get('reject')
+        if accept:
+            status= "true"
+        if reject:
+            status= "false"
+        statusupdate(id,finding,status)
+
+        return redirect(url_for("findroute"))
+    else:
+        if finding == 'empty':
+            return apology("find.html", "no more matches available")
+        pictures = profile(finding)
+        return render_template("find.html",pictures=pictures)
 
 
 @app.route("/profile", methods=["GET", "POST"])
@@ -146,7 +161,7 @@ def profileroute():
 @login_required
 def accountroute():
 
-     if request.method == "POST":
+    if request.method == "POST":
 
         fullname = request.form.get("fullname")
         password = request.form.get("password")
@@ -209,3 +224,8 @@ def deleteroute():
         return redirect(url_for("profileroute"))
     else:
         return render_template("delete.html", rows = selection)
+
+@app.route("/test", methods=["GET", "POST"])
+def testroute():
+    like(1,2)
+    return render_template("find.html")

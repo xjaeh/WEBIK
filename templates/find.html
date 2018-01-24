@@ -8,10 +8,23 @@
     <form action="{{ url_for('findroute') }}" method="post">
         <fieldset>
             <body>
+                {% if bottom %}
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="bs-component">
+                            <div class="alert alert-dismissible alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                             {% set bottom = bottom.replace("-"," ") %}
+                             {{bottom}}.
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                {% else %}
                 <p align="center">
                 <form  >
-                    <button style="width:300px" class="btn btn-danger" formaction="{{ url_for('findroute') }}" formmethod="get" > DISLIKE </button>
-                    <button style="width:300px" class="btn btn-success" formaction="{{ url_for('findroute') }}" formmethod="get" > LIKE </button>
+                    <input class="btn btn-error" type="submit" value="reject" name="reject" style="width:300px" >
+                    <input class="btn btn-success" type="submit" value="accept" name="accept" style="width:300px" >
                 </form>
                     <div class="gallery">
                         {% for picture in pictures %}
@@ -23,6 +36,7 @@
                             {% endif %}
                         </a>
                         {% endfor %}
+                        {% endif %}
                 </div>
             </body>
         </fieldset>
