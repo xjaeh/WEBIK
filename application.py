@@ -115,7 +115,7 @@ def logoutroute():
     return redirect(url_for("mainroute"))
 
 @app.route("/workspace", methods=["GET", "POST"])
-#@login_required
+@login_required
 def workspaceroute():
     return render_template("workspace.html")
 
@@ -124,7 +124,7 @@ def howitworksroute():
     return render_template("howitworks.html")
 
 @app.route("/find", methods=["GET", "POST"])
-#@login_required
+@login_required
 def findroute():
     id = session.get("user_id")
     rows = db.execute("SELCT * FROM users WHERE id=:id", id=id)
@@ -134,20 +134,21 @@ def findroute():
 
 
 @app.route("/profile", methods=["GET", "POST"])
-#@login_required
+@login_required
 def profileroute():
     # if user reached route via POST (as by submitting a form via POST)
     id = session.get("user_id")
     pictures = profile(id)
     return render_template("profile.html",pictures=pictures)
 
+
 @app.route("/account", methods=["GET", "POST"])
-#@login_required
+@login_required
 def accountroute():
+
     if request.method == "POST":
 
         fullname = request.form.get("fullname")
-
         password = request.form.get("password")
         if request.form.get("old password") and request.form.get("password") and request.form.get("confirmpassword"):
             rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
@@ -175,9 +176,11 @@ def accountroute():
     else:
         return render_template("account.html")
 
+
 @app.route("/upload", methods=["GET", "POST"])
-#@login_required
+@login_required
 def uploadroute():
+
     if request.method == "POST" and "photo"in request.files:
         if request.form.get("url"):
             filename = request.form.get("url")
@@ -189,3 +192,16 @@ def uploadroute():
 
     else:
         return render_template("upload.html")
+
+@app.route("/delete", methods=["GET", "POST"])
+@login_required
+def deleteroute():
+
+    rows = db.execute("SELECT * FROM pictures WHERE id=:id", id=1 )
+
+    if request.method == "POST":
+        db.execute("DELETE FROM pictures WHERE picture = :picture", picture = request.form.get("delete"))
+
+        return redirect(url_for("profileroute"))
+    else:
+        return render_template("delete.html", rows=rows)

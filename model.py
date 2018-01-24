@@ -57,7 +57,6 @@ def account(fullname, password, email, work, search):
     if search:
         db.execute("UPDATE users SET search = :searcg WHERE id = :id" , \
         search = search, id = id, )
-
     """
     Functie: profile(id):
     	returned Profile of None
@@ -80,5 +79,7 @@ def find(id):
     search = rows[0]["search"]
     possible_matches = db.execute("SELECT * FROM users WHERE work=:search", search=search)
 
-
+def delete(filename, id):
+    show = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
+    db.execute("DELETE FROM pictures WHERE picture=:picture, username=:username", picture=picture, username=username)
 
