@@ -8,12 +8,12 @@
     <form action="{{ url_for('email_sentroute') }}" method="post">
         <fieldset>
             <body>
-                <img src="static/img/test.jpg" align="right" width="600px" heigth:"600px" style="padding:40px">
                 <h1> Email sent</h1>
                 <br>
                 an email containing your new password has been sent to your emailadress
                 <br>
             </body>
+            <button class="btn btn-default" formaction="{{ url_for('mainroute') }}" formmethod="get" type="main">Return to main</button>
         </fieldset>
     </form>
 {% endblock %}
