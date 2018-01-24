@@ -1,6 +1,9 @@
 from cs50 import SQL
 from passlib.apps import custom_app_context as pwd_context
 from flask_session import Session
+import smtplib
+import random
+import string
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 db = SQL("sqlite:///WEBIK.db")
 
@@ -114,7 +117,7 @@ def retrievepassword(username, email):
             server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 
             subject = "Forgot password"
-            text = "Hello, {}!\n\n your new password is: \n\n {} \n\n you can now use this password to log into your account.".format(rows[0]["fullname"], password)
+            text = "Hello, {}!\n\n your new password is: \n\n '{}' \n\n you can now use this password to log into your account.".format(rows[0]["fullname"], password)
 
         message = 'Subject: {}\n\n{}'.format(subject, text)
 
