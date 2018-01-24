@@ -79,7 +79,12 @@ def find(id):
     search = rows[0]["search"]
     possible_matches = db.execute("SELECT * FROM users WHERE work=:search", search=search)
 
-def delete(filename, id):
+def select(id):
 
-    show = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
-    db.execute("DELETE FROM pictures WHERE picture=:picture, username=:username", picture=picture, username=username)
+    rows = db.execute("SELECT * FROM pictures WHERE id=:id", id=id )
+    return rows
+
+def delete(picture, id):
+
+    return db.execute("DELETE FROM pictures WHERE picture = :picture", picture = picture)
+
