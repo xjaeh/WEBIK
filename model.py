@@ -48,7 +48,7 @@ def login(username, hash):
 def account(fullname, old_password, password, confirm_password, email, work, search):
     """Let's the user change his/her personal information"""
 
-    # Changes users full name if the user submitted one
+    # Changes users fullname if the user submitted one
     if fullname:
         if " " in fullname:
             db.execute("UPDATE users SET fullname = :fullname WHERE id = :id" , \

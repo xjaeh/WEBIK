@@ -33,7 +33,12 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="{{ url_for('mainroute') }}"><span class="blue">Tistacy</span></a>
+                        <a class="navbar-brand"
+                         {% if session.user_id %}
+                        href="{{ url_for('workspaceroute') }}"
+                        {% endif %}
+                        href="{{ url_for('mainroute') }}"
+                        ><span class="blue">Tistacy</span></a>
                     </div>
                     <div class="collapse navbar-collapse" id="navbar">
                         {% if session.user_id %}
@@ -47,9 +52,6 @@
                         {% else %}
                              <ul class="nav navbar-nav ">
                                 <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
-                            </ul>
-                            <ul class="nav navbar-nav navbar-right">
-                                <li><a href="{{ url_for('forgotpasswordroute') }}">Forgot Password</a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
                                 <li><a href="{{ url_for('loginroute') }}">Log In</a></li>
