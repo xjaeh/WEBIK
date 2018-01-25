@@ -91,3 +91,8 @@ def delete(picture, id):
 
     return db.execute("DELETE FROM pictures WHERE picture = :picture", picture = picture)
 
+def matchdata(id,otherid):
+    if id == 1 and otherid == None:
+        matchdata = {}
+    else:
+        matchdata["id"] = {}
