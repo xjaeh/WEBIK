@@ -45,7 +45,7 @@ def login(username, hash):
     else:
         return rows[0]["id"]
 
-def account(fullname, oldpassword, password, confirmpassword, email, work, search):
+def account(fullname, old_password, password, confirm_password, email, work, search):
     """Let's the user change his/her personal information"""
 
     # Changes users full name if the user submitted one
