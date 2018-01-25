@@ -20,9 +20,9 @@ def register(username, hash, fullname, work, search, email):
 
     # Checks if username and email already exists
     if username in usernames:
-        return "x"
+        return "error_user"
     elif email in emails:
-        return "y"
+        return "error_email"
 
     # Puts user information into the database
     else:
@@ -57,15 +57,15 @@ def account(fullname, oldpassword, password, confirmpassword, email, work, searc
             return 0
 
     # Checks if all the passwordfields are filled in otherwise apology
-    if password or confirmpassword or oldpassword:
-        if not oldpassword or not password or not confirmpassword:
+    if password or confirm_password or old_password:
+        if not old_password or not password or not confirm_password:
             return 1
         # Changes the password if the user submitted all passwords
         else:
-            if password != confirmpassword:
+            if password != confirm_password:
                 return 3
             rows = db.execute("SELECT * FROM users WHERE id=:id", id= session["user_id"])
-            if pwd_context.verify(oldpassword, rows[0]["hash"]) == False:
+            if pwd_context.verify(old_password, rows[0]["hash"]) == False:
                 return 1
             else:
                 db.execute("UPDATE users SET hash = :hash WHERE id = :id" , \
@@ -101,14 +101,14 @@ def find(id):
     # Selects search catogory from user and returns all users with the same work
     search = db.execute("SELECT search FROM users WHERE id=:id", id=id)
     possible_matches = db.execute("SELECT id FROM users WHERE work=:search", search=search[0]["search"])
-    possible_matchesset = set(match["id"] for match in possible_matches)
+    possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
-    alreadyseen= db.execute("SELECT otherid FROM matchstatus WHERE id=:id", id=id)
-    alreadyseenset= set(already["otherid"] for already in alreadyseen)
+    already_seen= db.execute("SELECT otherid FROM matchstatus WHERE id=:id", id=id)
+    already_seen_set= set(already["otherid"] for already in already_seen)
 
     # Returns a user id from possible_matches minus the ones already seen
-    show = possible_matchesset - alreadyseenset
+    show = possible_matches_set - already_seen_set
     shows = [id for id in show]
     if shows == []:
         return 'empty'
@@ -124,11 +124,11 @@ def delete(picture, id):
     """Lets the user remove a picture from the database"""
     return db.execute("DELETE FROM pictures WHERE picture = :picture", picture = picture)
 
-def statusupdate(id,otherid,status):
+def status_update(id,otherid,status):
     """Inserst status into database"""
     db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)", id=id, otherid=otherid, status=status)
 
-def statuscheck(id, otherid):
+def status_check(id, otherid):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
@@ -146,7 +146,7 @@ def password_generator(chars=string.ascii_uppercase + string.digits):
     """Generate a random password with length 10"""
     return ''.join(random.choice(chars) for i in range(10))
 
-def retrievepassword(username, email):
+def retrieve_password(username, email):
     """Allows the user to have a new password sent to them"""
 
     # Retrieves info for username and checks if username exists
@@ -178,12 +178,12 @@ def retrievepassword(username, email):
         server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
         server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
-def inform_match(id1, id2):
+def inform_match(id, otherid):
     """Sends new password to user and his/her match in case of a match"""
 
     # Selects user and match information
-    userinfo = db.execute("SELECT * FROM users WHERE id=:id", id=id1)
-    matchinfo = db.execute("SELECT * FROM users WHERE id=:id", id=id2)
+    user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
+    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=otherid)
 
     # Sets up emailserver
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)

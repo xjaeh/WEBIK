@@ -69,16 +69,16 @@ def registerroute():
         if request.form.get("search") == "I am looking for a ...":
             return apology("register.html","Please fill in what profession you're looking for")
 
-        # Function that puts infomation in database, ff conditions apply
+        # Function that puts infomation in database, if conditions apply
         check = register(request.form.get("username"),
                 pwd_context.hash(request.form.get("password")), \
                 request.form.get("fullname"), request.form.get("work"), \
                 request.form.get("search"), request.form.get("email"))
 
         # Checks if username and email are not already used
-        if check == "x":
+        if check == "error_user":
             return apology("register.html", "Username already exist")
-        if check == "y":
+        if check == "error_email":
             return apology("register.html", "Email already exist")
 
         # Remembers user id and logs in automatically
@@ -105,14 +105,14 @@ def loginroute():
             return apology("login.html","Must provide valid password")
 
         # Function that checks username and password combination, otherwise apology
-        test = login(username=request.form.get("username"), hash=request.form.get("password"))
+        check = login(username=request.form.get("username"), hash=request.form.get("password"))
 
-        if test == False:
+        if check == False:
             return apology("login.html","Invalid username and password combination")
 
         # Redirects user to workspace if logged in correctly
         else:
-            session["user_id"] = test
+            session["user_id"] = check
         return redirect(url_for("workspaceroute"))
 
     # Else if user reached route via GET (as by clicking a link or via redirect)
@@ -162,10 +162,10 @@ def findroute():
             status= "false"
 
         # Function that changes the status of the two id's
-        statusupdate(id,finding,status)
+        status_update(id,finding,status)
 
         # Function that checks if the id's accepted eachother and sends email
-        check = statuscheck(id,finding)
+        check = status_check(id,finding)
         if check == True:
             inform_match(id,finding)
         return redirect(url_for("findroute"))
@@ -198,12 +198,12 @@ def accountroute():
         # Checks if fullname is made up of at least 2 words
         if request.form.get("fullname"):
             if " " not in request.form.get("fullname") and len(request.form.get("fullname") < 3):
-                return apology("account.html", "please fill in your full name")
+                return apology("account.html", "Please fill in your full name")
 
         # Checks if email is valid
         if request.form.get("email"):
             if "@" not in request.form.get("email") or "." not in request.form.get("email"):
-                return apology("please fill in a valid email adress")
+                return apology("Please fill in a valid email adress")
 
         # Changes the users information, returns an integer in case of an error
         errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
@@ -212,13 +212,13 @@ def accountroute():
 
         # Tells the user what error occured
         if errorcode == 0:
-            return apology("account.html", "please fill in at least two words in full name")
+            return apology("account.html", "Please fill in at least two words in full name")
         if errorcode == 1:
-            return apology("account.html", "please fill in old password, new pasword and confirm password")
+            return apology("account.html", "Please fill in old password, new pasword and confirm password")
         if errorcode == 2:
-            return apology("account.html", "please make sure new password and password confirmation are the same")
+            return apology("account.html", "Please make sure new password and password confirmation are the same")
         if errorcode == 3:
-            return apology("account.html", "old password invalid")
+            return apology("account.html", "Old password invalid")
 
         # Redirects the user if there was no error
         else:
@@ -283,7 +283,7 @@ def forgotpasswordroute():
             return apology("forgotpassword.html", "please fill in all fields")
         else:
             # Changes the users password in the database and sends the user an email
-            errorcode = retrievepassword(request.form.get("username"), request.form.get("email"))
+            errorcode = retrieve_password(request.form.get("username"), request.form.get("email"))
 
         # Tells the user what error occured
         if errorcode == 0:
