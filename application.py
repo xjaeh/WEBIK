@@ -112,7 +112,7 @@ def loginroute():
 
         # Redirects user to workspace if logged in correctly
         else:
-            session["user_id"] = test
+            session["user_id"] = check
         return redirect(url_for("workspaceroute"))
 
     # Else if user reached route via GET (as by clicking a link or via redirect)
@@ -231,7 +231,7 @@ def accountroute():
 @app.route("/upload", methods=["GET", "POST"])
 @login_required
 def uploadroute():
-    """Allows the user to upload a photo to his/her profile""""
+    """Allows the user to upload a photo to his/her profile"""
 
     # If user reached route via POST
     if request.method == "POST" and "photo"in request.files:
