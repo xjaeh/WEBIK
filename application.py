@@ -198,12 +198,12 @@ def accountroute():
         # Checks if fullname is made up of at least 2 words
         if request.form.get("fullname"):
             if " " not in request.form.get("fullname") and len(request.form.get("fullname") < 3):
-                return apology("account.html", "please fill in your full name")
+                return apology("account.html", "Please fill in your full name")
 
         # Checks if email is valid
         if request.form.get("email"):
             if "@" not in request.form.get("email") or "." not in request.form.get("email"):
-                return apology("please fill in a valid email adress")
+                return apology("Please fill in a valid email adress")
 
         # Changes the users information, returns an integer in case of an error
         errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
@@ -212,13 +212,13 @@ def accountroute():
 
         # Tells the user what error occured
         if errorcode == 0:
-            return apology("account.html", "please fill in at least two words in full name")
+            return apology("account.html", "Please fill in at least two words in full name")
         if errorcode == 1:
-            return apology("account.html", "please fill in old password, new pasword and confirm password")
+            return apology("account.html", "Please fill in old password, new pasword and confirm password")
         if errorcode == 2:
-            return apology("account.html", "please make sure new password and password confirmation are the same")
+            return apology("account.html", "Please make sure new password and password confirmation are the same")
         if errorcode == 3:
-            return apology("account.html", "old password invalid")
+            return apology("account.html", "Old password invalid")
 
         # Redirects the user if there was no error
         else:
