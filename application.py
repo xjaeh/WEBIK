@@ -231,7 +231,7 @@ def accountroute():
 @app.route("/upload", methods=["GET", "POST"])
 @login_required
 def uploadroute():
-    """Allows the user to upload a photo to his/her profile""""
+    """Allows the user to upload a photo to his/her profile"""
 
     # If user reached route via POST
     if request.method == "POST" and "photo"in request.files:

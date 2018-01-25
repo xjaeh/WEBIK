@@ -46,9 +46,9 @@ def login(username, hash):
         return rows[0]["id"]
 
 def account(fullname, oldpassword, password, confirmpassword, email, work, search):
-   """Let's the user change his/her personal information"""
+    """Let's the user change his/her personal information"""
 
-    # Changes users full name if the user submitted one
+    # Changes users fullname if the user submitted one
     if fullname:
         if " " in fullname:
             db.execute("UPDATE users SET fullname = :fullname WHERE id = :id" , \
@@ -179,26 +179,26 @@ def retrievepassword(username, email):
         server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
 def inform_match(id1, id2):
-     """Sends new password to user and his/her match in case of a match"""
+    """Sends new password to user and his/her match in case of a match"""
 
     # Selects user and match information
     userinfo = db.execute("SELECT * FROM users WHERE id=:id", id=id1)
     matchinfo = db.execute("SELECT * FROM users WHERE id=:id", id=id2)
 
     # Sets up emailserver
-    server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)"
+    server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 
     # Creates a seperate  email for each person
-    subject = "You got a match
+    subject = "You got a match"
     text1 = """ Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress:
-            \ {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(userinfo[0]["fullname"],
-            \matchinfo[0]["fullname"], userinfo[0]["email"])
-            message1 = 'Subject: {}\n\n{}'.format(subject, text1)
+             {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(userinfo[0]["fullname"],\
+            matchinfo[0]["fullname"], userinfo[0]["email"])
+    message1 = 'Subject: {}\n\n{}'.format(subject, text1)
 
     text2 = """Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress:
-            {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(matchinfo[0]["fullname"],
-            \userinfo[0]["fullname"], matchinfo[0]["email"])
-            message2 = 'Subject: {}\n\n{}'.format(subject, text2)
+            {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(matchinfo[0]["fullname"],\
+            userinfo[0]["fullname"], matchinfo[0]["email"])
+    message2 = 'Subject: {}\n\n{}'.format(subject, text2)
 
     server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
 
