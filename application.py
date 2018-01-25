@@ -4,19 +4,18 @@ from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from tempfile import mkdtemp
 from datetime import datetime
-
 from helpers import *
 from model import *
 
-# configure application
+# Configure application
 app = Flask(__name__)
 
+# Initialise photo upload mechanism
 photos = UploadSet('photos', IMAGES)
-
 app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
 configure_uploads(app, photos)
 
-# ensure responses aren't cached
+# Ensure responses aren't cached
 if app.config["DEBUG"]:
     @app.after_request
     def after_request(response):
@@ -25,7 +24,7 @@ if app.config["DEBUG"]:
         response.headers["Pragma"] = "no-cache"
         return response
 
-# configure session to use filesystem (instead of signed cookies)
+# Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -33,14 +32,18 @@ Session(app)
 
 @app.route("/")
 def mainroute():
+    """ Returns homepage"""
     return render_template("main.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def registerroute():
+    """Allows user to register"""
 
+    # If user reached route via POST
     if request.method == "POST":
 
-        # Ensure username, password and password confirmation are filled in, otherwise apology
+        # Ensure username, password and password confirmation are filled in
+        # Otherwise it returns apology
         if not request.form.get("username"):
             return apology("register.html","Please fill in an username")
 
@@ -56,7 +59,8 @@ def registerroute():
         if not request.form.get("fullname") or " " not in request.form.get("fullname"):
             return apology("register.html","Please fill in your first and last name")
 
-        if not request.form.get("email") or "@" not in request.form.get("email") or "." not in request.form.get("email"):
+        if not request.form.get("email") \
+        or "@" not in request.form.get("email") or "." not in request.form.get("email"):
             return apology("register.html","Please fill in a valid email address")
 
         if request.form.get("work") == "I am a ...":
@@ -65,72 +69,113 @@ def registerroute():
         if request.form.get("search") == "I am looking for a ...":
             return apology("register.html","Please fill in what profession you're looking for")
 
-        check = register(request.form.get("username"), pwd_context.hash(request.form.get("password")), request.form.get("fullname"), \
-                request.form.get("work"), request.form.get("search"), request.form.get("email"))
+        # Function that puts infomation in database, if conditions apply
+        check = register(request.form.get("username"),
+                pwd_context.hash(request.form.get("password")), \
+                request.form.get("fullname"), request.form.get("work"), \
+                request.form.get("search"), request.form.get("email"))
 
-        if check == "x":
+        # Checks if username and email are not already used
+        if check == "error_user":
             return apology("register.html", "Username already exist")
-        if check == "y":
+        if check == "error_email":
             return apology("register.html", "Email already exist")
+
+        # Remembers user id and logs in automatically
         else:
             session["user_id"] = check
         return render_template("workspace.html")
+
+    # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def loginroute():
+    """Allows the user to log in"""
 
-    session.clear()
-
+    # If user reached route via POST
     if request.method == "POST":
 
-        # Ensure username is submitted
+        # Ensures username  and password are submitted
         if not request.form.get("username"):
             return apology("login.html","Must provide username")
 
         elif not request.form.get("password"):
             return apology("login.html","Must provide valid password")
 
-        test = login(username=request.form.get("username"), hash=request.form.get("password"))
+        # Function that checks username and password combination, otherwise apology
+        check = login(username=request.form.get("username"), hash=request.form.get("password"))
 
-        if test == False:
+        if check == False:
             return apology("login.html","Invalid username and password combination")
+
+        # Redirects user to workspace if logged in correctly
         else:
             session["user_id"] = test
         return redirect(url_for("workspaceroute"))
 
+    # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
 
-
 @app.route("/logout")
 def logoutroute():
-    """Log user out."""
+    """Logs user out"""
 
-    # forget any user_id
+    # Forgets any user_id
     session.clear()
 
-    # redirect user to main
+    # Redirects user to main
     return redirect(url_for("mainroute"))
 
-@app.route("/workspace", methods=["GET", "POST"])
+@app.route("/workspace", methods=["GET"])
 @login_required
 def workspaceroute():
+    """Returns workspace template"""
     return render_template("workspace.html")
 
-@app.route("/howitworks", methods=["GET", "POST"])
+@app.route("/howitworks", methods=["GET"])
 def howitworksroute():
+    """Returns howitworks template"""
     return render_template("howitworks.html")
 
 @app.route("/find", methods=["GET", "POST"])
 @login_required
 def findroute():
+    """Displays the profile of a possible match"""
+
+    # Initialises variables
+    status = "temporary"
     id = session.get("user_id")
-    rows = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    work = rows[0][""]
-    pictures = profile(id)
-    return render_template("find.html",pictures=pictures)
+    finding=find(id)
+
+    # If users reaches route via POST
+    if request.method == "POST":
+
+        # Checks if user clicked the accept or reject button
+        accept = request.form.get('accept')
+        reject = request.form.get('reject')
+        if accept:
+            status= "true"
+        if reject:
+            status= "false"
+
+        # Function that changes the status of the two id's
+        status_update(id,finding,status)
+
+        # Function that checks if the id's accepted eachother and sends email
+        check = status_check(id,finding)
+        if check == True:
+            inform_match(id,finding)
+        return redirect(url_for("findroute"))
+
+    # Else if user reached route via GET (as by clicking a link or via redirect)
+    else:
+        if finding == 'empty':
+            return apology("find.html", "no more matches available")
+        pictures = profile(finding)
+        return render_template("find.html",pictures=pictures)
 
 
 @app.route("/profile", methods=["GET", "POST"])
@@ -139,73 +184,121 @@ def profileroute():
     # if user reached route via POST (as by submitting a form via POST)
     id = session.get("user_id")
     pictures = profile(id)
-    return render_template("profile.html",pictures=pictures)
+    return render_template("profile.html",pictures=reversed(pictures))
 
 
 @app.route("/account", methods=["GET", "POST"])
 @login_required
 def accountroute():
+    """Let's the user change his/her personel information"""
 
+    # If the users reaches route via POST
     if request.method == "POST":
 
-        fullname = request.form.get("fullname")
-        password = request.form.get("password")
-        if request.form.get("old password") and request.form.get("password") and request.form.get("confirmpassword"):
-            rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
-            if pwd_context.verify(request.form.get("old password"), rows[0]["hash"]):
-                if request.form.get("password") != request.form.get("confirmpassword"):
-                    return apology("account.html","passwords don't match")
-                password = request.form.get("new password")
-            else:
-                return apology("account.html", "old password not correct")
-        password = request.form.get("password")
+        # Checks if fullname is made up of at least 2 words
+        if request.form.get("fullname"):
+            if " " not in request.form.get("fullname") and len(request.form.get("fullname") < 3):
+                return apology("account.html", "please fill in your full name")
 
+        # Checks if email is valid
         if request.form.get("email"):
             if "@" not in request.form.get("email") or "." not in request.form.get("email"):
                 return apology("please fill in a valid email adress")
 
-        email = request.form.get("email")
+        # Changes the users information, returns an integer in case of an error
+        errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
+                    request.form.get("password"), request.form.get("confirmpassword"), \
+                    request.form.get("email"), request.form.get("work"), request.form.get("search"))
 
-        errorcode = account(fullname, request.form.get("old password"), request.form.get("password"), \
-        request.form.get("confirmpassword"), email, request.form.get("work"), request.form.get("search"))
-
+        # Tells the user what error occured
         if errorcode == 0:
-            return apology("account.html", "please fill in old password, new pasword and confirm password")
+            return apology("account.html", "please fill in at least two words in full name")
         if errorcode == 1:
+            return apology("account.html", "please fill in old password, new pasword and confirm password")
+        if errorcode == 2:
+            return apology("account.html", "please make sure new password and password confirmation are the same")
+        if errorcode == 3:
             return apology("account.html", "old password invalid")
+
+        # Redirects the user if there was no error
         else:
             return redirect(url_for("workspaceroute"))
 
+    # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("account.html")
-
 
 @app.route("/upload", methods=["GET", "POST"])
 @login_required
 def uploadroute():
+    """Allows the user to upload a photo to his/her profile""""
 
+    # If user reached route via POST
     if request.method == "POST" and "photo"in request.files:
+
+        # Initialise id
+        id = session.get("user_id")
+
+        # Saves filename from url or from a local file
         if request.form.get("url"):
             filename = request.form.get("url")
         else:
             filename = photos.save(request.files['photo'])
-        id = session.get("user_id")
+
+        # Function that saves filename to database
         upload(filename, id)
         return redirect(url_for("profileroute"))
 
+    # Else if user reached route via GET (as by clicking a link or via redirect)id = session.get("user_id")
     else:
         return render_template("upload.html")
 
 @app.route("/delete", methods=["GET", "POST"])
 @login_required
 def deleteroute():
+    """Allows the user to delete a picture from his/her profile"""
 
+    #initialise variables
     id = session.get("user_id")
     picture = request.form.get("delete")
     selection = select(id)
 
+    # If user reached rout via POST
     if request.method == "POST":
         delete(picture, id)
         return redirect(url_for("profileroute"))
+
+    # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("delete.html", rows = selection)
+
+@app.route("/forgotpassword", methods=["GET", "POST"])
+def forgotpasswordroute():
+    """Allows the user to request a new password"""
+
+    # If user reached rout via POST
+    if request.method == "POST":
+        # Ensures the user filled in all forms
+        if not request.form.get("username") or not request.form.get("email"):
+            return apology("forgotpassword.html", "please fill in all fields")
+        else:
+            # Changes the users password in the database and sends the user an email
+            errorcode = retrieve_password(request.form.get("username"), request.form.get("email"))
+
+        # Tells the user what error occured
+        if errorcode == 0:
+            return apology("forgotpassword.html", "username incorrect")
+        if errorcode == 1:
+            return apology("forgotpassword.html", "email incorrect")
+        # Redirects the user to mail_sent.html in case of no error
+        else:
+            return redirect(url_for("email_sentroute"))
+
+    # Else if user reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template("forgotpassword.html")
+
+@app.route("/email_sent", methods=["GET"])
+def email_sentroute():
+    """displays email_sent.html"""
+    return render_template("email_sent.html")
