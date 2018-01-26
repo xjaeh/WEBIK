@@ -73,7 +73,8 @@ def registerroute():
         check = register(request.form.get("username"),
                 pwd_context.hash(request.form.get("password")), \
                 request.form.get("fullname"), request.form.get("work"), \
-                request.form.get("search"), request.form.get("email"))
+                request.form.get("search"), request.form.get("email"), \
+                request.form.get("extra_search"))
 
         # Checks if username and email are not already used
         if check == "error_user":
@@ -175,7 +176,7 @@ def findroute():
         if finding == 'empty':
             return apology("find.html", "no more matches available")
         pictures = profile(finding)
-        return render_template("find.html",pictures=pictures)
+        return render_template("find.html",pictures=reversed(pictures))
 
 
 @app.route("/profile", methods=["GET", "POST"])
@@ -208,7 +209,8 @@ def accountroute():
         # Changes the users information, returns an integer in case of an error
         errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
                     request.form.get("password"), request.form.get("confirmpassword"), \
-                    request.form.get("email"), request.form.get("work"), request.form.get("search"))
+                    request.form.get("email"), request.form.get("work"), request.form.get("search"), \
+                    request.form.get("extra_search"))
 
         # Tells the user what error occured
         if errorcode == 0:

@@ -10,7 +10,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 # Initialises database
 db = SQL("sqlite:///WEBIK.db")
 
-def register(username, hash, fullname, work, search, email):
+def register(username, hash, fullname, work, search, email, extra_search):
     """Register machanism"""
 
     # Initialise variables
@@ -26,9 +26,9 @@ def register(username, hash, fullname, work, search, email):
 
     # Puts user information into the database
     else:
-        db.execute("INSERT INTO users (username, hash, fullname, work, search, email) VALUES \
-                   (:username, :hash, :fullname, :work, :search, :email)", username=username, \
-                    hash=hash, fullname=fullname, work=work, search=search, email=email)
+        db.execute("INSERT INTO users (username, hash, fullname, work, search, email, extra_search) VALUES \
+                   (:username, :hash, :fullname, :work, :search, :email, :extra_search)", username=username, \
+                    hash=hash, fullname=fullname, work=work, search=search, email=email, extra_search=extra_search)
 
     # Returns users id
     rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
@@ -45,7 +45,7 @@ def login(username, hash):
     else:
         return rows[0]["id"]
 
-def account(fullname, old_password, password, confirm_password, email, work, search):
+def account(fullname, old_password, password, confirm_password, email, work, search, extra_search):
     """Let's the user change his/her personal information"""
 
     # Changes users fullname if the user submitted one
@@ -85,6 +85,11 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
     if search and search != "I am looking for a ...":
         db.execute("UPDATE users SET search=:search WHERE id=:id" , \
         search=search, id=session["user_id"], )
+    
+    # Changes the users extra_search if the user submitted one
+    if extra_search and extra_search != "Optional":
+        db.execute("UPDATE users SET extra_search=:extra_search WHERE id=:id" , \
+        extra_search=extra_search, id=session["user_id"], )
 
 def profile(id):
     """Returns all photos under the users id in reverse order"""
@@ -100,7 +105,9 @@ def find(id):
 
     # Selects search catogory from user and returns all users with the same work
     search = db.execute("SELECT search FROM users WHERE id=:id", id=id)
-    possible_matches = db.execute("SELECT id FROM users WHERE work=:search", search=search[0]["search"])
+    extra_search = db.execute("SELECT extra_search FROM users WHERE id=:id", id=id)
+    possible_matches = db.execute("SELECT id FROM users WHERE work=:search OR work=:extra_search", \
+                                    search=search[0]["search"], extra_search=extra_search[0]["extra_search"])
     possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
@@ -125,7 +132,7 @@ def delete(picture, id):
     return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
 
 def status_update(id,otherid,status):
-    """Inserst status into database"""
+    """Inserts status into database"""
     db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)",\
                 id=id, otherid=otherid, status=status)
 
@@ -219,7 +226,7 @@ def conversation(id, otherid):
 
 def chat(id,otherid,balk):
 
-    return db.execute("INSERT INTO messages (balk, id, otherid) VALUES (:balk, :id, :otherid)" \
+    return db.execute("INSERT INTO messages (balk, id, otherid) VALUES (:balk, :id, :otherid)", \
                         balk=balk, id=id, otherid=otherid)
 
 
