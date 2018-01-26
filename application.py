@@ -30,6 +30,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+
 @app.route("/")
 def mainroute():
     """ Returns homepage"""
@@ -69,17 +70,20 @@ def registerroute():
         if request.form.get("search") == "I am looking for a ...":
             return apology("register.html","Please fill in what profession you're looking for")
 
-        # Function that puts infomation in database, if conditions apply
+        # put infomation in database if conditions apply
         check = register(request.form.get("username"),
                 pwd_context.hash(request.form.get("password")), \
                 request.form.get("fullname"), request.form.get("work"), \
-                request.form.get("search"), request.form.get("email"))
+                request.form.get("search"), request.form.get("email"), \
+                request.form.get("extra_search"))
 
         # Checks if username and email are not already used
         if check == "error_user":
             return apology("register.html", "Username already exist")
-        if check == "error_email":
+        elif check == "error_email":
             return apology("register.html", "Email already exist")
+        elif check == 'error_invalid_mail':
+            return apology("register.html", "Error while sending mail to your emailaddres")
 
         # Remembers user id and logs in automatically
         else:
@@ -89,6 +93,7 @@ def registerroute():
     # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def loginroute():
@@ -119,6 +124,7 @@ def loginroute():
     else:
         return render_template("login.html")
 
+
 @app.route("/logout")
 def logoutroute():
     """Logs user out"""
@@ -129,16 +135,19 @@ def logoutroute():
     # Redirects user to main
     return redirect(url_for("mainroute"))
 
+
 @app.route("/workspace", methods=["GET"])
 @login_required
 def workspaceroute():
     """Returns workspace template"""
     return render_template("workspace.html")
 
+
 @app.route("/howitworks", methods=["GET"])
 def howitworksroute():
     """Returns howitworks template"""
     return render_template("howitworks.html")
+
 
 @app.route("/find", methods=["GET", "POST"])
 @login_required
@@ -175,7 +184,7 @@ def findroute():
         if finding == 'empty':
             return apology("find.html", "no more matches available")
         pictures = profile(finding)
-        return render_template("find.html",pictures=pictures)
+        return render_template("find.html",pictures=reversed(pictures))
 
 
 @app.route("/profile", methods=["GET", "POST"])
@@ -208,7 +217,8 @@ def accountroute():
         # Changes the users information, returns an integer in case of an error
         errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
                     request.form.get("password"), request.form.get("confirmpassword"), \
-                    request.form.get("email"), request.form.get("work"), request.form.get("search"))
+                    request.form.get("email"), request.form.get("work"), request.form.get("search"), \
+                    request.form.get("extra_search"))
 
         # Tells the user what error occured
         if errorcode == 0:
@@ -253,6 +263,7 @@ def uploadroute():
     else:
         return render_template("upload.html")
 
+
 @app.route("/delete", methods=["GET", "POST"])
 @login_required
 def deleteroute():
@@ -271,6 +282,7 @@ def deleteroute():
     # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("delete.html", rows = selection)
+
 
 @app.route("/forgotpassword", methods=["GET", "POST"])
 def forgotpasswordroute():
@@ -298,11 +310,11 @@ def forgotpasswordroute():
     else:
         return render_template("forgotpassword.html")
 
+
 @app.route("/email_sent", methods=["GET"])
 def email_sentroute():
     """displays email_sent.html"""
     return render_template("email_sent.html")
-
 
 @app.route("/chat", methods=["GET", "POST"])
 def chatroute():
