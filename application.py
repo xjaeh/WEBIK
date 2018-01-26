@@ -306,4 +306,12 @@ def email_sentroute():
 @app.route("/chat", methods=["GET"])
 def chatroute():
     """displays chat.html"""
+
+    if request.method == "POST":
+        conversation(id,otherid)
+
+        balk = request.form.get("balk")
+        chat(id, otherid, balk)
+
     return render_template("chat.html")
+

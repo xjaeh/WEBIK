@@ -126,9 +126,10 @@ def delete(picture, id):
 
 def status_update(id,otherid,status):
     """Inserst status into database"""
-    db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)", id=id, otherid=otherid, status=status)
+    db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)",\
+                id=id, otherid=otherid, status=status)
 
-def status_check(id, otherid):
+def status_check(id, otherid, other_username):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
@@ -139,6 +140,9 @@ def status_check(id, otherid):
     try:
         status1[0]["status"] == "true" and status2[0]["status"] == "true"
         return True
+        other_username = db.execute("SELECT username FROM users WHERE id=:otherid", id=otherid)
+        db.execute("INSERT INTO pairs (id, other_id, other_username) VALUES (:id, :other_id, :other_username)", \
+                    id=id, otherid=otherid, other_username = other_username)
     except:
         return False
 
@@ -207,4 +211,17 @@ def inform_match(id, otherid):
     server.sendmail("tistacyhelpdesk@gmail.com", matchinfo[0]["email"], message2)
 
     return True
+
+def conversation(id, otherid):
+
+    return db.execute("SELECT * FROM messages WHERE id=:id AND otherid=:otherid OR WHERE id=:otherid AND otherid=:id", \
+                    id=id, otherid=otherid)
+
+def chat(id,otherid,balk):
+
+    return db.execute("INSERT INTO messages (balk, id, otherid) VALUES (:balk, :id, :otherid)" \
+                        balk=balk, id=id, otherid=otherid)
+
+
+
 
