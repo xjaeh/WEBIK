@@ -212,15 +212,19 @@ def inform_match(id, otherid):
 
     return True
 
+def contacts(id):
+    return db.execute("SELECT * FROM pairs WHERE id=:id", id=id)
+
 def conversation(id, otherid):
 
-    return db.execute("SELECT * FROM messages WHERE id=:id AND otherid=:otherid OR WHERE id=:otherid AND otherid=:id", \
+    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:otherid OR id=:otherid AND other_id=:id", \
                     id=id, otherid=otherid)
 
-def chat(id,otherid,balk):
+def chat(id,otherid,message):
 
-    return db.execute("INSERT INTO messages (balk, id, otherid) VALUES (:balk, :id, :otherid)" \
-                        balk=balk, id=id, otherid=otherid)
+    return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
+                        message=message, id=id, other_id=otherid)
+
 
 
 
