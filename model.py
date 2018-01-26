@@ -27,8 +27,8 @@ def register(username, hash, fullname, work, search, email):
     # Puts user information into the database
     else:
         db.execute("INSERT INTO users (username, hash, fullname, work, search, email) VALUES \
-                   (:username, :hash, :fullname, :work, :search, :email)", username = username, \
-                    hash = hash, fullname = fullname, work = work, search = search, email = email)
+                   (:username, :hash, :fullname, :work, :search, :email)", username=username, \
+                    hash=hash, fullname=fullname, work=work, search=search, email=email)
 
     # Returns users id
     rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
@@ -51,8 +51,8 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
     # Changes users fullname if the user submitted one
     if fullname:
         if " " in fullname:
-            db.execute("UPDATE users SET fullname = :fullname WHERE id = :id" , \
-            fullname = fullname, id = session["user_id"], )
+            db.execute("UPDATE users SET fullname=:fullname WHERE id=:id" , \
+            fullname=fullname, id=session["user_id"], )
         else:
             return 0
 
@@ -64,27 +64,27 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
         else:
             if password != confirm_password:
                 return 3
-            rows = db.execute("SELECT * FROM users WHERE id=:id", id= session["user_id"])
+            rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
             if pwd_context.verify(old_password, rows[0]["hash"]) == False:
                 return 1
             else:
-                db.execute("UPDATE users SET hash = :hash WHERE id = :id" , \
-                    hash = pwd_context.hash(password), id = session["user_id"], )
+                db.execute("UPDATE users SET hash=:hash WHERE id=:id" , \
+                    hash=pwd_context.hash(password), id=session["user_id"])
 
     # Changes the users email if the user submitted one
     if email:
-        db.execute("UPDATE users SET email = :email WHERE id = :id" , \
-        email = email, id = session["user_id"], )
+        db.execute("UPDATE users SET email=:email WHERE id=:id" , \
+        email=email, id=session["user_id"], )
 
     # Changes the users profession is the user submitted one
     if work and work != "I am a ...":
-        db.execute("UPDATE users SET work = :work WHERE id = :id" , \
-        work = work, id = session["user_id"], )
+        db.execute("UPDATE users SET work=:work WHERE id=:id" , \
+        work=work, id=session["user_id"], )
 
     # Changes the users search if the user submitted one
     if search and search != "I am looking for a ...":
-        db.execute("UPDATE users SET search = :search WHERE id = :id" , \
-        search = search, id = session["user_id"], )
+        db.execute("UPDATE users SET search=:search WHERE id=:id" , \
+        search=search, id=session["user_id"], )
 
 def profile(id):
     """Returns all photos under the users id in reverse order"""
@@ -122,7 +122,7 @@ def select(id):
 
 def delete(picture, id):
     """Lets the user remove a picture from the database"""
-    return db.execute("DELETE FROM pictures WHERE picture = :picture", picture = picture)
+    return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
 
 def status_update(id,otherid,status):
     """Inserst status into database"""
@@ -142,7 +142,7 @@ def status_check(id, otherid, other_username):
         return True
         other_username = db.execute("SELECT username FROM users WHERE id=:otherid", id=otherid)
         db.execute("INSERT INTO pairs (id, other_id, other_username) VALUES (:id, :other_id, :other_username)", \
-                    id=id, otherid=otherid, other_username = other_username)
+                    id=id, otherid=otherid, other_username=other_username)
     except:
         return False
 
@@ -169,8 +169,8 @@ def retrieve_password(username, email):
             password = password_generator()
 
             # Changes password in database
-            db.execute("UPDATE users SET hash =:hash WHERE username =:username" , \
-                    hash = pwd_context.hash(password), username = username, )
+            db.execute("UPDATE users SET hash =:hash WHERE username=:username" , \
+                    hash = pwd_context.hash(password), username=username)
 
             # Sends new password to user and sets email structure
             server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
