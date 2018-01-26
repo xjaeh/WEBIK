@@ -16,7 +16,7 @@
         <script src="https://bootswatch.com/3/sandstone/bootstrap.min.css"></script>
 
 
-        <title>Tistacy {% block title %}{% endblock %}</title>
+        <title>Collab studio {% block title %}{% endblock %}</title>
 
     </head>
 
@@ -38,7 +38,7 @@
                         href="{{ url_for('workspaceroute') }}"
                         {% endif %}
                         href="{{ url_for('mainroute') }}"
-                        ><span class="blue">Tistacy</span></a>
+                        ><span class="blue">Collab studio</span></a>
                     </div>
                     <div class="collapse navbar-collapse" id="navbar">
                         {% if session.user_id %}

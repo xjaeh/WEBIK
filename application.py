@@ -302,3 +302,8 @@ def forgotpasswordroute():
 def email_sentroute():
     """displays email_sent.html"""
     return render_template("email_sent.html")
+
+@app.route("/chat", methods=["GET"])
+def chatroute():
+    """displays chat.html"""
+    return render_template("chat.html")
