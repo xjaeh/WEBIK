@@ -1,0 +1,6 @@
+congratulations {}!
+
+you just got a match with {}
+here's {}'s emailaddress: {}
+
+we hope you have a pleasant collaboration!
