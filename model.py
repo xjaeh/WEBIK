@@ -85,7 +85,7 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
     if search and search != "I am looking for a ...":
         db.execute("UPDATE users SET search=:search WHERE id=:id" , \
         search=search, id=session["user_id"], )
-    
+
     # Changes the users extra_search if the user submitted one
     if extra_search and extra_search != "Optional":
         db.execute("UPDATE users SET extra_search=:extra_search WHERE id=:id" , \
@@ -95,6 +95,11 @@ def profile(id):
     """Returns all photos under the users id in reverse order"""
     photos = db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
     return photos[::1]
+
+def profile_fullname(id):
+    """Returns fullname of user"""
+    fullname = db.execute("SELECT fullname FROM users WHERE id=:id", id=id)
+    return fullname
 
 def upload(filename, id):
     """Lets the user upload a new photo and adds it to the database"""
@@ -122,17 +127,26 @@ def find(id):
     else:
         return random.choice(shows)
 
+def find_work(id,finding):
+    """Returns profession of user"""
+
+    work = db.execute("SELECT work FROM users WHERE id=:id", id=finding)
+    return work
+
 def select(id):
     """Returns all pictures from the users id"""
-    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=id )
+
+    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
     return picture
 
 def delete(picture, id):
     """Lets the user remove a picture from the database"""
+
     return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
 
 def status_update(id,otherid,status):
     """Inserts status into database"""
+
     db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)",\
                 id=id, otherid=otherid, status=status)
 
@@ -219,16 +233,18 @@ def inform_match(id, otherid):
 
     return True
 
+def contacts(id):
+    return db.execute("SELECT * FROM pairs WHERE id=:id", id=id)
+
 def conversation(id, otherid):
 
-    return db.execute("SELECT * FROM messages WHERE id=:id AND otherid=:otherid OR WHERE id=:otherid AND otherid=:id", \
+    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:otherid OR id=:otherid AND other_id=:id", \
                     id=id, otherid=otherid)
 
-def chat(id,otherid,balk):
+def chat(id,otherid,message):
 
-    return db.execute("INSERT INTO messages (balk, id, otherid) VALUES (:balk, :id, :otherid)", \
-                        balk=balk, id=id, otherid=otherid)
-
+    return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
+                        message=message, id=id, other_id=otherid)
 
 
 

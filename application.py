@@ -176,17 +176,18 @@ def findroute():
         if finding == 'empty':
             return apology("find.html", "no more matches available")
         pictures = profile(finding)
-        return render_template("find.html",pictures=reversed(pictures))
-
+        work = find_work(id,finding)
+        return render_template("find.html",pictures=reversed(pictures), work=work)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profileroute():
-    # if user reached route via POST (as by submitting a form via POST)
+    """Display users profile """
+
     id = session.get("user_id")
     pictures = profile(id)
-    return render_template("profile.html",pictures=reversed(pictures))
-
+    fullname = profile_fullname(id)
+    return render_template("profile.html",pictures=reversed(pictures), fullname=fullname)
 
 @app.route("/account", methods=["GET", "POST"])
 @login_required
@@ -305,15 +306,28 @@ def email_sentroute():
     """displays email_sent.html"""
     return render_template("email_sent.html")
 
-@app.route("/chat", methods=["GET"])
+@app.route("/chat", methods=["GET", "POST"])
 def chatroute():
     """displays chat.html"""
+    #id = session.get("user_id")
+    id = 1
+    contact = contacts(id)
+    otherid = 0
 
+    # if user reached route via POST
     if request.method == "POST":
-        conversation(id,otherid)
-
-        balk = request.form.get("balk")
-        chat(id, otherid, balk)
-
-    return render_template("chat.html")
-
+        ids=[str(person["other_id"]) for person in contact]
+        for item in ids:
+            check = request.form.get(item)
+            if check:
+                session["other_id"] = item
+        otherid = session["other_id"]
+        if request.form.get("message"):
+            message = request.form.get("message")
+            chat(id, otherid, message)
+        messages = conversation(id, otherid)
+        return render_template("chat.html", contacts=contact, messages=messages, id=id, otherid=otherid)
+    else:
+        otherid = contact[0]["other_id"]
+        messages = conversation(id, otherid)
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)
