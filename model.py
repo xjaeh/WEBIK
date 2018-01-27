@@ -247,4 +247,3 @@ def chat(id,otherid,message):
                         message=message, id=id, other_id=otherid)
 
 
-
