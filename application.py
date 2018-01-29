@@ -170,7 +170,7 @@ def findroute():
         if reject:
             status= "false"
 
-        # Function that changes the status of the two id's
+        # Function that changes the status of the two id'ss
         status_update(id,finding,status)
 
         # Function that checks if the id's accepted eachother and sends email
