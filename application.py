@@ -184,17 +184,18 @@ def findroute():
         if finding == 'empty':
             return apology("find.html", "no more matches available")
         pictures = profile(finding)
-        return render_template("find.html",pictures=reversed(pictures))
-
+        work = find_work(id,finding)
+        return render_template("find.html",pictures=reversed(pictures), work=work)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profileroute():
-    # if user reached route via POST (as by submitting a form via POST)
+    """Display users profile """
+
     id = session.get("user_id")
     pictures = profile(id)
-    return render_template("profile.html",pictures=reversed(pictures))
-
+    fullname = profile_fullname(id)
+    return render_template("profile.html",pictures=reversed(pictures), fullname=fullname)
 
 @app.route("/account", methods=["GET", "POST"])
 @login_required
@@ -343,5 +344,6 @@ def chatroute():
         except KeyError:
             otherid = contact[0]["other_id"]
         messages = conversation(id, otherid)
+
         return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)
 

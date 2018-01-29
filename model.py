@@ -96,6 +96,11 @@ def profile(id):
     photos = db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
     return photos[::1]
 
+def profile_fullname(id):
+    """Returns fullname of user"""
+    fullname = db.execute("SELECT fullname FROM users WHERE id=:id", id=id)
+    return fullname
+
 def upload(filename, id):
     """Lets the user upload a new photo and adds it to the database"""
     db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
@@ -122,17 +127,26 @@ def find(id):
     else:
         return random.choice(shows)
 
+def find_work(id,finding):
+    """Returns profession of user"""
+
+    work = db.execute("SELECT work FROM users WHERE id=:id", id=finding)
+    return work
+
 def select(id):
     """Returns all pictures from the users id"""
-    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=id )
+
+    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
     return picture
 
 def delete(picture, id):
     """Lets the user remove a picture from the database"""
+
     return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
 
 def status_update(id,otherid,status):
     """Inserts status into database"""
+
     db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)",\
                 id=id, otherid=otherid, status=status)
 
@@ -231,8 +245,5 @@ def chat(id,otherid,message):
 
     return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
                         message=message, id=id, other_id=otherid)
-
-
-
 
 
