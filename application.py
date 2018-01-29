@@ -332,18 +332,18 @@ def chatroute():
             check = request.form.get(item)
             if check:
                 session["other_id"] = item
-        otherid = session.get("other_id")
+        other_id = session.get("other_id")
         if request.form.get("message"):
             message = request.form.get("message")
-            chat(id, otherid, message)
-        messages = conversation(id, otherid)
+            chat(id, other_id, message)
+        messages = conversation(id, other_id)
         return redirect(url_for("chatroute"))
 
     else:
-        otherid = contact[0]["other_id"]
+        other_id = contact[0]["other_id"]
         if session.get("other_id") == None:
-            session["other_id"] = otherid
-        otherid = session.get("other_id")
-        messages = conversation(id, otherid)
+            session["other_id"] = other_id
+        other_id = session.get("other_id")
+        messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id)
