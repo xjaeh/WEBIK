@@ -174,7 +174,7 @@ def findroute():
         status_update(id,finding,status)
 
         # Function that checks if the id's accepted eachother and sends email
-        check = status_check(id,finding)
+        check = status_check(id,finding,other_username)
         if check == True:
             inform_match(id,finding)
         return redirect(url_for("findroute"))
@@ -185,7 +185,7 @@ def findroute():
             return apology("find.html", "no more matches available")
         pictures = profile(finding)
         work = find_work(id,finding)
-        return render_template("find.html",pictures=reversed(pictures), work=work)
+        return render_template("find.html", pictures=reversed(pictures), work=work)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -318,12 +318,12 @@ def email_sentroute():
     return render_template("email_sent.html")
 
 @app.route("/chat", methods=["GET", "POST"])
+@login_required
 def chatroute():
     """displays chat.html"""
     #id = session.get("user_id")
     id = 1
     contact = contacts(id)
-    other_id = 0
 
     # if user reached route via POST
     if request.method == "POST":
@@ -332,18 +332,18 @@ def chatroute():
             check = request.form.get(item)
             if check:
                 session["other_id"] = item
-        other_id = session["other_id"]
+        otherid = session.get("other_id")
         if request.form.get("message"):
             message = request.form.get("message")
-            chat(id, other_id, message)
-        messages = conversation(id, other_id)
-        return render_template("chat.html", contacts=contact, messages=messages, id=id, other_id=other_id)
+            chat(id, otherid, message)
+        messages = conversation(id, otherid)
+        return redirect(url_for("chatroute"))
+
     else:
-        try:
-            other_id = session["other_id"]
-        except KeyError:
-            other_id = contact[0]["other_id"]
-        messages = conversation(id, other_id)
+        otherid = contact[0]["other_id"]
+        if session.get("other_id") == None:
+            session["other_id"] = otherid
+        otherid = session.get("other_id")
+        messages = conversation(id, otherid)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id)
-
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)

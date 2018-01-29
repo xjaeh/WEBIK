@@ -357,14 +357,14 @@
 	<div id="sidepanel">
 		<div id="contacts">
 			<ul>
-			    {% for contact in contacts %}
+			 {% for contact in contacts %}
 				<li class="contact">
 					<div class="wrap">
 						<div class="meta">
-						  {% if otherid == contact["other_id"] %}
-						  <input class="btn btn-success" type="submit" name={{contact.other_id}} value={{contact.other_username}} style="width:100px" method="post" >
+						  {% if other_id == contact["other_id"] %}
+						  <input class="btn btn-success" type="submit" name={{contact["other_id"]}} value={{contact.other_username}} style="width:100px" method="post" >
 						  {% else %}
-							<input class="btn btn-default" type="submit" name={{contact.other_id}} value={{contact.other_username}} style="width:100px" method="post" >
+							<input class="btn btn-default" type="submit" name={{contact["other_id"]}} value={{contact.other_username}} style="width:100px" method="post" >
 							{% endif %}
 						</div>
 					</div>
