@@ -116,8 +116,8 @@ def find(id):
     possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
-    already_seen= db.execute("SELECT otherid FROM matchstatus WHERE id=:id", id=id)
-    already_seen_set= set(already["otherid"] for already in already_seen)
+    already_seen= db.execute("SELECT other_id FROM matchstatus WHERE id=:id", id=id)
+    already_seen_set= set(already["other_id"] for already in already_seen)
 
     # Returns a user id from possible_matches minus the ones already seen
     show = possible_matches_set - already_seen_set
@@ -144,26 +144,26 @@ def delete(picture, id):
 
     return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
 
-def status_update(id,otherid,status):
+def status_update(id,other_id,status):
     """Inserts status into database"""
 
-    db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)",\
-                id=id, otherid=otherid, status=status)
+    db.execute("INSERT INTO matchstatus (id, other_id, status) VALUES (:id, :other_id, :status)",\
+                id=id, other_id=other_id, status=status)
 
-def status_check(id, otherid, other_username):
+def status_check(id, other_id, other_username):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
-    status1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=id, otherid=otherid)
-    status2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=otherid, otherid=id)
+    status1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=id, other_id=other_id)
+    status2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=other_id, other_id=id)
 
     # Returns True or False depending upon mutual like or not
     try:
         status1[0]["status"] == "true" and status2[0]["status"] == "true"
         return True
-        other_username = db.execute("SELECT username FROM users WHERE id=:otherid", id=otherid)
+        other_username = db.execute("SELECT username FROM users WHERE id=:other_id", id=other_id)
         db.execute("INSERT INTO pairs (id, other_id, other_username) VALUES (:id, :other_id, :other_username)", \
-                    id=id, otherid=otherid, other_username=other_username)
+                    id=id, other_id=other_id, other_username=other_username)
     except:
         return False
 
@@ -203,12 +203,12 @@ def retrieve_password(username, email):
         server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
         server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
-def inform_match(id, otherid):
+def inform_match(id, other_id):
     """Sends new password to user and his/her match in case of a match"""
 
     # Selects user and match information
     user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=otherid)
+    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
 
     # Sets up emailserver
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
@@ -236,14 +236,13 @@ def inform_match(id, otherid):
 def contacts(id):
     return db.execute("SELECT * FROM pairs WHERE id=:id", id=id)
 
-def conversation(id, otherid):
+def conversation(id, other_id):
 
-    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:otherid OR id=:otherid AND other_id=:id", \
-                    id=id, otherid=otherid)
+    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:other_id OR id=:other_id AND other_id=:id", \
+                    id=id, other_id=other_id)
 
-def chat(id,otherid,message):
+def chat(id,other_id,message):
 
     return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
-                        message=message, id=id, other_id=otherid)
-
+                        message=message, id=id, other_id=other_id)
 

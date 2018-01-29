@@ -323,7 +323,7 @@ def chatroute():
     #id = session.get("user_id")
     id = 1
     contact = contacts(id)
-    otherid = 0
+    other_id = 0
 
     # if user reached route via POST
     if request.method == "POST":
@@ -332,18 +332,18 @@ def chatroute():
             check = request.form.get(item)
             if check:
                 session["other_id"] = item
-        otherid = session["other_id"]
+        other_id = session["other_id"]
         if request.form.get("message"):
             message = request.form.get("message")
-            chat(id, otherid, message)
-        messages = conversation(id, otherid)
-        return render_template("chat.html", contacts=contact, messages=messages, id=id, otherid=otherid)
+            chat(id, other_id, message)
+        messages = conversation(id, other_id)
+        return render_template("chat.html", contacts=contact, messages=messages, id=id, other_id=other_id)
     else:
         try:
-            otherid = session["other_id"]
+            other_id = session["other_id"]
         except KeyError:
-            otherid = contact[0]["other_id"]
-        messages = conversation(id, otherid)
+            other_id = contact[0]["other_id"]
+        messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id)
 

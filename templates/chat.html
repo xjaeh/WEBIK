@@ -351,7 +351,7 @@
 </head>
 <form action="{{ url_for('chatroute') }}" method="post">
 <body>
-<h1 style="margin:10"> Chat </h1>
+<h2 style="margin:10"> Chat </h2>
 <h3 style="word-spacing:240px; margin:0"> Contacts Messages</h3>
 <div id="frame">
 	<div id="sidepanel">
@@ -361,7 +361,7 @@
 				<li class="contact">
 					<div class="wrap">
 						<div class="meta">
-						  {% if otherid == contact.other_id %}
+						  {% if otherid == contact["other_id"] %}
 						  <input class="btn btn-success" type="submit" name={{contact.other_id}} value={{contact.other_username}} style="width:100px" method="post" >
 						  {% else %}
 							<input class="btn btn-default" type="submit" name={{contact.other_id}} value={{contact.other_username}} style="width:100px" method="post" >
