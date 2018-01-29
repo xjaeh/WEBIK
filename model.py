@@ -14,35 +14,36 @@ db = SQL("sqlite:///WEBIK.db")
 def register(username, hash, fullname, work, search, email, extra_search):
     """Register machanism"""
 
-    # Initialise variables
+    # Initialize variables
     users = db.execute("SELECT * FROM users")
     usernames = [user["username"] for user in users]
     emails = [user["email"] for user in users]
 
-    # Checks if username and email already exists
+    # Check if username and email already exists
     if username in usernames:
         return "error_user"
     elif email in emails:
         return "error_email"
 
-    try:
-        server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
-
-        # Creates a seperate  email for each person
-        subject = "Welcome"
-
-        with open("email_templates/match.txt", "r") as mail:
-            text = str(mail).format(fullname)
-
-        message = 'Subject: {}\n\n{}'.format(subject, text)
-
-        server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-        server.sendmail("tistacyhelpdesk@gmail.com", email, message)
-    else:
-        return "error_invalid_email"
-
     # Puts user information into the database
     else:
+        try:
+            server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+
+            # Creates a seperate  email for each person
+            subject = "Welcome"
+
+            with open("email_templates/welcome.txt", "r") as mail:
+                text = str(mail.read()).format(fullname)
+
+            message = 'Subject: {}\n\n{}'.format(subject, text)
+
+            server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+            server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+
+        except:
+            return "error_invalid_mail"
+
         db.execute("INSERT INTO users (username, hash, fullname, work, search, email, extra_search) VALUES \
                    (:username, :hash, :fullname, :work, :search, :email, :extra_search)", username=username, \
                     hash=hash, fullname=fullname, work=work, search=search, email=email, extra_search=extra_search)
@@ -73,19 +74,19 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
             db.execute("UPDATE users SET fullname=:fullname WHERE id=:id" , \
             fullname=fullname, id=session["user_id"], )
         else:
-            return 0
+            return "error_fullname"
 
     # Checks if all the passwordfields are filled in otherwise apology
     if password or confirm_password or old_password:
         if not old_password or not password or not confirm_password:
-            return 1
+            return "error_password"
         # Changes the password if the user submitted all passwords
         else:
             if password != confirm_password:
-                return 3
+                return "error_password_confirmation"
             rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
             if pwd_context.verify(old_password, rows[0]["hash"]) == False:
-                return 1
+                return "error_password_verify"
             else:
                 db.execute("UPDATE users SET hash=:hash WHERE id=:id" , \
                     hash=pwd_context.hash(password), id=session["user_id"])
@@ -169,7 +170,7 @@ def status_update(id,other_id,status):
     db.execute("INSERT INTO matchstatus (id, other_id, status) VALUES (:id, :other_id, :status)",\
                 id=id, other_id=other_id, status=status)
 
-def status_check(id, other_id, other_username):
+def status_check(id, other_id):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
@@ -183,6 +184,7 @@ def status_check(id, other_id, other_username):
         other_username = db.execute("SELECT username FROM users WHERE id=:other_id", id=other_id)
         db.execute("INSERT INTO pairs (id, other_id, other_username) VALUES (:id, :other_id, :other_username)", \
                     id=id, other_id=other_id, other_username=other_username)
+        inform_match(id, other_id)
     except:
         return False
 
@@ -215,15 +217,16 @@ def retrieve_password(username, email):
             server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 
             # Creates a seperate  email for each person
-            subject = "Welcome"
+            subject = "New Password"
 
-            with open("email_templates/welcome.txt", "r") as mail:
-                text = str(mail).format(username, password)
+            with open("email_templates/new_password.txt", "r") as mail:
+                text = str(mail.read()).format(fullname, password)
 
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
             server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
             server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+
 
 def inform_match(id, other_id):
     """Sends new password to user and his/her match in case of a match"""
@@ -239,8 +242,8 @@ def inform_match(id, other_id):
     subject = "You got a match"
 
     with open("email_templates/match.txt", "r") as mail:
-        text1 = str(mail).format(userinfo[0]["fullname"],matchinfo[0]["fullname"],matchinfo[0]["email"])
-        text2 = str(mail).format(matchinfo[0]["fullname"],userinfo[0]["fullname"],userinfo[0]["email"])
+        text1 = str(mail.read()).format(user_info[0]["fullname"], match_info[0]["fullname"], match_info[0]["email"])
+        text2 = str(mail.read()).format(match_info[0]["fullname"], user_info[0]["fullname"], user_info[0]["email"])
 
     message1 = 'Subject: {}\n\n{}'.format(subject, text1)
     message2 = 'Subject: {}\n\n{}'.format(subject, text2)
@@ -248,18 +251,21 @@ def inform_match(id, other_id):
     server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
 
     # Sends each message to the corresponding user
-    server.sendmail("tistacyhelpdesk@gmail.com", userinfo[0]["email"], message1)
-    server.sendmail("tistacyhelpdesk@gmail.com", matchinfo[0]["email"], message2)
+    server.sendmail("tistacyhelpdesk@gmail.com", user_info[0]["email"], message1)
+    server.sendmail("tistacyhelpdesk@gmail.com", match_info[0]["email"], message2)
 
     return True
 
+
 def contacts(id):
     return db.execute("SELECT * FROM pairs WHERE id=:id", id=id)
+
 
 def conversation(id, other_id):
 
     return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:other_id OR id=:other_id AND other_id=:id", \
                     id=id, other_id=other_id)
+
 
 def chat(id,other_id,message):
 

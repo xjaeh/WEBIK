@@ -10,7 +10,7 @@ from model import *
 # Configure application
 app = Flask(__name__)
 
-# Initialise photo upload mechanism
+# Initialize photo upload mechanism
 photos = UploadSet('photos', IMAGES)
 app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
 configure_uploads(app, photos)
@@ -33,7 +33,7 @@ Session(app)
 
 @app.route("/")
 def mainroute():
-    """ Returns homepage"""
+    """ Renders homepage"""
     return render_template("main.html")
 
 @app.route("/register", methods=["GET", "POST"])
@@ -43,8 +43,8 @@ def registerroute():
     # If user reached route via POST
     if request.method == "POST":
 
-        # Ensure username, password and password confirmation are filled in
-        # Otherwise it returns apology
+        # Ensure all forms are filled in
+        # Otherwise, return apology
         if not request.form.get("username"):
             return apology("register.html","Please fill in an username")
 
@@ -69,7 +69,7 @@ def registerroute():
         if request.form.get("search") == "I am looking for a ...":
             return apology("register.html","Please fill in what profession you're looking for")
 
-        # put infomation in database if conditions apply
+        # Put infomation in database, if conditions apply
         check = register(request.form.get("username"),
                 pwd_context.hash(request.form.get("password")), \
                 request.form.get("fullname"), request.form.get("work"), \
@@ -153,15 +153,15 @@ def howitworksroute():
 def findroute():
     """Displays the profile of a possible match"""
 
-    # Initialises variables
+    # Initialize variables
     status = "temporary"
     id = session.get("user_id")
     finding=find(id)
 
-    # If users reaches route via POST
+    # If user reaches route via POST
     if request.method == "POST":
 
-        # Checks if user clicked the accept or reject button
+        # Check if user clicked accept or reject
         accept = request.form.get('accept')
         reject = request.form.get('reject')
         if accept:
@@ -169,72 +169,90 @@ def findroute():
         if reject:
             status= "false"
 
-        # Function that changes the status of the two id'ss
+        # Update status of user and other user
         status_update(id,finding,status)
 
-        # Function that checks if the id's accepted eachother and sends email
-        check = status_check(id,finding,other_username)
+        # Check if the id's accepted eachother
+        check = status_check(id,finding)
         if check == True:
+            # sends email in case of match
             inform_match(id,finding)
         return redirect(url_for("findroute"))
 
-    # Else if user reached route via GET (as by clicking a link or via redirect)
+    # If user reached route via GET (as by clicking a link or via redirect)
     else:
+        # Return new account when availible
         if finding == 'empty':
             return apology("find.html", "no more matches available")
-        pictures = profile(finding)
-        work = find_work(id,finding)
-        return render_template("find.html", pictures=reversed(pictures), work=work)
+        else:
+            pictures = profile(finding)
+            work = find_work(id,finding)
+            return render_template("find.html", pictures=reversed(pictures), work=work)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profileroute():
-    """Display users profile """
+    """Display user's profile """
 
     id = session.get("user_id")
     pictures = profile(id)
     fullname = profile_fullname(id)
+
     return render_template("profile.html",pictures=reversed(pictures), fullname=fullname)
 
 @app.route("/account", methods=["GET", "POST"])
 @login_required
 def accountroute():
-    """Let's the user change his/her personel information"""
+    """Let user change his/her personal information"""
 
-    # If the users reaches route via POST
+    # If user reaches route via POST
     if request.method == "POST":
 
-        # Checks if fullname is made up of at least 2 words
+        # Ensure fullname is filled in and made up of at least two words
         if request.form.get("fullname"):
             if " " not in request.form.get("fullname") and len(request.form.get("fullname") < 3):
                 return apology("account.html", "Please fill in your full name")
 
-        # Checks if email is valid
+        # Check if email is valid
         if request.form.get("email"):
-            if "@" not in request.form.get("email") or "." not in request.form.get("email"):
-                return apology("Please fill in a valid email adress")
+            try:
+                server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 
-        # Changes the users information, returns an integer in case of an error
+                # Creates a seperate  email for each person
+                subject = "New password"
+
+                with open("email_templates/change_password.txt", "r") as mail:
+                    text = str(mail).format(fullname)
+
+                message = 'Subject: {}\n\n{}'.format(subject, text)
+
+                server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+                server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+
+            except:
+                return apology("account.html", "can't send email to that emailadress")
+
+        # Change personal information, return an errorcode in case of a problem
         errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
                     request.form.get("password"), request.form.get("confirmpassword"), \
                     request.form.get("email"), request.form.get("work"), request.form.get("search"), \
                     request.form.get("extra_search"))
 
-        # Tells the user what error occured
-        if errorcode == 0:
+        # Tell user what error occured
+        if errorcode == "error_fullname":
             return apology("account.html", "Please fill in at least two words in full name")
-        if errorcode == 1:
+        if errorcode == "error_password":
             return apology("account.html", "Please fill in old password, new pasword and confirm password")
-        if errorcode == 2:
+        if errorcode == "error_password_confirmation":
             return apology("account.html", "Please make sure new password and password confirmation are the same")
-        if errorcode == 3:
+        if errorcode == "error_password_verify":
             return apology("account.html", "Old password invalid")
 
-        # Redirects the user if there was no error
+        # Else, redirect user to workspace
         else:
             return redirect(url_for("workspaceroute"))
 
-    # Else if user reached route via GET (as by clicking a link or via redirect)
+    # If user reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("account.html")
 
