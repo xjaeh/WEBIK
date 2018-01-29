@@ -194,8 +194,10 @@ def findroute():
             return apology("find.html", "no more matches available")
         else:
             pictures = profile(finding)
+            pictures = pictures[-6:]
             work = find_work(id,finding)
-            return render_template("find.html", pictures=reversed(pictures), work=work)
+            length = len(pictures)
+            return render_template("find.html", pictures=reversed(pictures), work=work, length=length)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -204,8 +206,9 @@ def profileroute():
 
     id = session.get("user_id")
     pictures = profile(id)
+    length = len(pictures)
     fullname = profile_fullname(id)
-    return render_template("profile.html",pictures=reversed(pictures), fullname=fullname)
+    return render_template("profile.html",pictures=reversed(pictures), fullname=fullname, length=length)
 
 @app.route("/account", methods=["GET", "POST"])
 @login_required
@@ -341,7 +344,8 @@ def chatroute():
             if request.form.get(item) == "Info":
                 fullname = profile_fullname(int(item))
                 pictures = profile(int(item))
-                return render_template("profile2.html",fullname=fullname, pictures=pictures)
+                length = len(pictures)
+                return render_template("profile2.html",fullname=fullname, pictures=reversed(pictures), length=length)
             elif request.form.get(item):
                 session["other_id"] = item
         other_id = session.get("other_id")
@@ -352,7 +356,10 @@ def chatroute():
         return redirect(url_for("chatroute"))
 
     else:
-        other_id = contact[0]["other_id"]
+        try:
+            other_id = contact[0]["other_id"]
+        except:
+            return render_template("chat2.html")
         if session.get("other_id") == None:
             session["other_id"] = other_id
         other_id = session.get("other_id")

@@ -16,12 +16,15 @@
                         {% for picture in pictures %}
                         <a>
                             {% if (picture.picture).startswith("http") or (picture.picture).startswith("data") %}
-                            <img src="{{picture.picture[:6]}}" width="375" height="250" style="padding:5px">
+                            <img src="{{picture.picture}}" width="375" height="250" style="padding:5px">
                             {% else %}
-                            <img src="static/img/{{picture.picture[:6]}}" width="375" height="250" style="padding:5px">
+                            <img src="static/img/{{picture.picture}}" width="375" height="250" style="padding:5px">
                             {% endif %}
                         </a>
                         {% endfor %}
+                        {% if length == 0 %}
+                        <h3> This profile has no pictures yet. </h3>
+                        {% endif %}
                     <br>
                 {% if bottom %}
                 <div class="row">

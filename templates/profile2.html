@@ -19,7 +19,10 @@
                             {% endif %}
                         </a>
                         {% endfor %}
-                </div>
+                    </div>
+                {% if length == 0 %}
+                <h3> This profile has no pictures yet. </h3>
+                {% endif %}
             </body>
         </fieldset>
     </form>

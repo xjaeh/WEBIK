@@ -355,13 +355,8 @@
 </style>
 </head>
 <form action="{{ url_for('chatroute') }}" method="post">
-<<<<<<< HEAD
 <body onload="goToAnchor();">
-<h1 style="margin:10"> Chat </h1>
-=======
-<body>
 <h2 style="margin:10"> Chat </h2>
->>>>>>> 905b7a1b51517157331ee0c11e9ba116fb5ea289
 <h3 style="word-spacing:240px; margin:0"> Contacts Messages</h3>
 <div id="frame">
 	<div id="sidepanel">
@@ -403,10 +398,10 @@
 		</div>
 	  <div class="message-input">
 			<div class="wrap">
-			 <form method=post>
-			   <input class="submit" type="text"  name="message" placeholder="Write your message..." />
+			 <form method="post">
+			   <input class="submit" type="text"  name="message" placeholder="Write your message..."  onKeyPress="return submitenter(this,event)"/>
+			   <button class="submit" formmethod="post" value="Send">SEND</button>
 			 </form>
-			<button class="submit" formmethod="post" value="Send">SEND</button>
 			</div>
 		</div>
 	</div>
@@ -417,7 +412,24 @@
 function goToAnchor() {
   location.href = "chat#bottom";
 }
-
 </script>
+<SCRIPT TYPE="text/javascript">
+<!--
+    function submitenter(myfield,e)
+    {
+        var keycode;
+        if (window.event) keycode = window.event.keyCode;
+        else if (e) keycode = e.which;
+        else return true;
 
+        if (keycode == 13)
+        {
+            myfield.form.submit();
+            return false;
+        }
+        else
+            return true;
+    }
+//-->
+</SCRIPT>
 {% endblock %}
