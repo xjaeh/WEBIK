@@ -64,7 +64,7 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
         else:
             if password != confirm_password:
                 return 3
-            rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
+            rows = db.execute("SELECT * FROM users WHERE isd=:id", id=session["user_id"])
             if pwd_context.verify(old_password, rows[0]["hash"]) == False:
                 return 1
             else:

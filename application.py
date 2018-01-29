@@ -43,6 +43,15 @@ def registerroute():
     # If user reached route via POST
     if request.method == "POST":
 
+        # Saves users input into session
+        session["username"] = request.form.get("username")
+        session["fullname"] = request.form.get("fullname")
+        session["email"] = request.form.get("email")
+        session["am"] = request.form.get("amwork")
+        session["look"] = request.form.get("search")
+        session["extra"] = request.form.get("extra_search")
+
+
         # Ensure username, password and password confirmation are filled in
         # Otherwise it returns apology
         if not request.form.get("username"):
@@ -92,7 +101,8 @@ def registerroute():
 
     # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("register.html")
+        fullname = str(request.form.get("fullname"))
+        return render_template("register.html", fullname=fullname)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -318,31 +328,34 @@ def email_sentroute():
     return render_template("email_sent.html")
 
 @app.route("/chat", methods=["GET", "POST"])
+@login_required
 def chatroute():
     """displays chat.html"""
-    #id = session.get("user_id")
-    id = 1
+    id = session.get("user_id")
     contact = contacts(id)
-    otherid = 0
 
     # if user reached route via POST
     if request.method == "POST":
         ids=[str(person["other_id"]) for person in contact]
         for item in ids:
-            check = request.form.get(item)
-            if check:
+            if request.form.get(item) == "Info":
+                fullname = profile_fullname(int(item))
+                pictures = profile(int(item))
+                return render_template("profile2.html",fullname=fullname, pictures=pictures)
+            elif request.form.get(item):
                 session["other_id"] = item
-        otherid = session["other_id"]
+        otherid = session.get("other_id")
         if request.form.get("message"):
             message = request.form.get("message")
             chat(id, otherid, message)
         messages = conversation(id, otherid)
-        return render_template("chat.html", contacts=contact, messages=messages, id=id, otherid=otherid)
+        return redirect(url_for("chatroute"))
+
     else:
-        try:
-            otherid = session["other_id"]
-        except KeyError:
-            otherid = contact[0]["other_id"]
+        otherid = contact[0]["other_id"]
+        if session.get("other_id") == None:
+            session["other_id"] = otherid
+        otherid = session.get("other_id")
         messages = conversation(id, otherid)
 
         return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)

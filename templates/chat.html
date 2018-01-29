@@ -347,10 +347,15 @@
 #frame .content .message-input .wrap button:focus {
   outline: none;
 }
+ a{
+    line-height: 0;
+    font-size: 0;
+    color: transparent;
+ }
 </style>
 </head>
 <form action="{{ url_for('chatroute') }}" method="post">
-<body>
+<body onload="goToAnchor();">
 <h1 style="margin:10"> Chat </h1>
 <h3 style="word-spacing:240px; margin:0"> Contacts Messages</h3>
 <div id="frame">
@@ -366,6 +371,7 @@
 						  {% else %}
 							<input class="btn btn-default" type="submit" name={{contact.other_id}} value={{contact.other_username}} style="width:100px" method="post" >
 							{% endif %}
+							<input class="btn btn-default" type="submit" name={{contact.other_id}} value="Info"  style="width:50px" method="post" >
 						</div>
 					</div>
 				</li>
@@ -388,8 +394,9 @@
     				{% endif %}
 				{% endfor %}
 			</ul>
+			<a name ="bottom">  hidden </a>
 		</div>
-	    <div class="message-input">
+	  <div class="message-input">
 			<div class="wrap">
 			 <form method=post>
 			   <input class="submit" type="text"  name="message" placeholder="Write your message..." />
@@ -400,5 +407,12 @@
 	</div>
 </body>
 </form>
+<script type="text/javascript">
+
+function goToAnchor() {
+  location.href = "chat#bottom";
+}
+
+</script>
 
 {% endblock %}
