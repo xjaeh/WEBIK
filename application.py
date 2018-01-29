@@ -60,9 +60,8 @@ def registerroute():
         if not request.form.get("fullname") or " " not in request.form.get("fullname"):
             return apology("register.html","Please fill in your first and last name")
 
-        if not request.form.get("email") \
-        or "@" not in request.form.get("email") or "." not in request.form.get("email"):
-            return apology("register.html","Please fill in a valid email address")
+        if not request.form.get("email"):
+            return apology("register.html","Please fill in a email address")
 
         if request.form.get("work") == "I am a ...":
             return apology("register.html","Please fill your profession in")
