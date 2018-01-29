@@ -38,7 +38,7 @@ def register(username, hash, fullname, work, search, email, extra_search):
 
         server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
         server.sendmail("tistacyhelpdesk@gmail.com", email, message)
-    else:
+    except:
         return "error_invalid_email"
 
     # Puts user information into the database
@@ -169,7 +169,7 @@ def status_update(id,other_id,status):
     db.execute("INSERT INTO matchstatus (id, other_id, status) VALUES (:id, :other_id, :status)",\
                 id=id, other_id=other_id, status=status)
 
-def status_check(id, other_id, other_username):
+def status_check(id, other_id):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
@@ -239,8 +239,8 @@ def inform_match(id, other_id):
     subject = "You got a match"
 
     with open("email_templates/match.txt", "r") as mail:
-        text1 = str(mail).format(userinfo[0]["fullname"],matchinfo[0]["fullname"],matchinfo[0]["email"])
-        text2 = str(mail).format(matchinfo[0]["fullname"],userinfo[0]["fullname"],userinfo[0]["email"])
+        text1 = str(mail).format(user_info[0]["fullname"],match_info[0]["fullname"],match_info[0]["email"])
+        text2 = str(mail).format(match_info[0]["fullname"],user_info[0]["fullname"],user_info[0]["email"])
 
     message1 = 'Subject: {}\n\n{}'.format(subject, text1)
     message2 = 'Subject: {}\n\n{}'.format(subject, text2)
@@ -248,8 +248,8 @@ def inform_match(id, other_id):
     server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
 
     # Sends each message to the corresponding user
-    server.sendmail("tistacyhelpdesk@gmail.com", userinfo[0]["email"], message1)
-    server.sendmail("tistacyhelpdesk@gmail.com", matchinfo[0]["email"], message2)
+    server.sendmail("tistacyhelpdesk@gmail.com", user_info[0]["email"], message1)
+    server.sendmail("tistacyhelpdesk@gmail.com", match_info[0]["email"], message2)
 
     return True
 

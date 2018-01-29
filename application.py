@@ -173,7 +173,7 @@ def findroute():
         status_update(id,finding,status)
 
         # Function that checks if the id's accepted eachother and sends email
-        check = status_check(id,finding,other_username)
+        check = status_check(id,finding)
         if check == True:
             inform_match(id,finding)
         return redirect(url_for("findroute"))
@@ -182,9 +182,10 @@ def findroute():
     else:
         if finding == 'empty':
             return apology("find.html", "no more matches available")
-        pictures = profile(finding)
-        work = find_work(id,finding)
-        return render_template("find.html", pictures=reversed(pictures), work=work)
+        else:
+            pictures = profile(finding)
+            work = find_work(id,finding)
+            return render_template("find.html", pictures=reversed(pictures), work=work)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
