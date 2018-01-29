@@ -324,7 +324,6 @@ def chatroute():
     contact = contacts(id)
     otherid = 0
 
-
     # if user reached route via POST
     if request.method == "POST":
         ids=[str(person["other_id"]) for person in contact]
@@ -339,7 +338,10 @@ def chatroute():
         messages = conversation(id, otherid)
         return render_template("chat.html", contacts=contact, messages=messages, id=id, otherid=otherid)
     else:
-        otherid = contact[0]["other_id"]
+        try:
+            otherid = session["other_id"]
+        except KeyError:
+            otherid = contact[0]["other_id"]
         messages = conversation(id, otherid)
         return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)
 
