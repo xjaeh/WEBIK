@@ -10,6 +10,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 # Initialises database
 db = SQL("sqlite:///WEBIK.db")
 
+
 def register(username, hash, fullname, work, search, email, extra_search):
     """Register machanism"""
 
@@ -24,6 +25,22 @@ def register(username, hash, fullname, work, search, email, extra_search):
     elif email in emails:
         return "error_email"
 
+    try:
+        server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+
+        # Creates a seperate  email for each person
+        subject = "Welcome"
+
+        with open("email_templates/match.txt", "r") as mail:
+            text = str(mail).format(fullname)
+
+        message = 'Subject: {}\n\n{}'.format(subject, text)
+
+        server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+        server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+    else:
+        return "error_invalid_email"
+
     # Puts user information into the database
     else:
         db.execute("INSERT INTO users (username, hash, fullname, work, search, email, extra_search) VALUES \
@@ -35,6 +52,7 @@ def register(username, hash, fullname, work, search, email, extra_search):
     id = rows[0]["id"]
     return rows[0]["id"]
 
+
 def login(username, hash):
     """Login mechanism"""
 
@@ -44,6 +62,7 @@ def login(username, hash):
         return False
     else:
         return rows[0]["id"]
+
 
 def account(fullname, old_password, password, confirm_password, email, work, search, extra_search):
     """Let's the user change his/her personal information"""
@@ -193,15 +212,18 @@ def retrieve_password(username, email):
             db.execute("UPDATE users SET hash =:hash WHERE username=:username" , \
                     hash = pwd_context.hash(password), username=username)
 
-            # Sends new password to user and sets email structure
             server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
-            subject = "Forgot password"
-            text = "Hello, {}!\n\n your new password is: \n\n '{}' \n\n you can now use this password to log into your account. \n don't forget to change youer password after logging in.".format(rows[0]["fullname"], password)
+
+            # Creates a seperate  email for each person
+            subject = "Welcome"
+
+            with open("email_templates/welcome.txt", "r") as mail:
+                text = str(mail).format(username, password)
+
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
-        # Sets up emailaccount
-        server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-        server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+            server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+            server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
 def inform_match(id, other_id):
     """Sends new password to user and his/her match in case of a match"""
@@ -215,14 +237,12 @@ def inform_match(id, other_id):
 
     # Creates a seperate  email for each person
     subject = "You got a match"
-    text1 = """ Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress:
-             {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(userinfo[0]["fullname"],\
-            matchinfo[0]["fullname"], userinfo[0]["email"])
-    message1 = 'Subject: {}\n\n{}'.format(subject, text1)
 
-    text2 = """Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress:
-            {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(matchinfo[0]["fullname"],\
-            userinfo[0]["fullname"], matchinfo[0]["email"])
+    with open("email_templates/match.txt", "r") as mail:
+        text1 = str(mail).format(userinfo[0]["fullname"],matchinfo[0]["fullname"],matchinfo[0]["email"])
+        text2 = str(mail).format(matchinfo[0]["fullname"],userinfo[0]["fullname"],userinfo[0]["email"])
+
+    message1 = 'Subject: {}\n\n{}'.format(subject, text1)
     message2 = 'Subject: {}\n\n{}'.format(subject, text2)
 
     server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
