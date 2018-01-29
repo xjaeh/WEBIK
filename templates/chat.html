@@ -27,7 +27,7 @@
   max-width: 1000px;
   height: 92vh;
   min-height: 300px;
-  max-height: 600px;
+  max-height: 570px;
   background: #E6EAEA;
 }
 @media screen and (max-width: 360px) {
@@ -351,7 +351,8 @@
 </head>
 <form action="{{ url_for('chatroute') }}" method="post">
 <body>
-<h1> Chat</h1>
+<h1 style="margin:10"> Chat </h1>
+<h3 style="word-spacing:240px; margin:0"> Contacts Messages</h3>
 <div id="frame">
 	<div id="sidepanel">
 		<div id="contacts">
@@ -399,6 +400,5 @@
 	</div>
 </body>
 </form>
-<script type="text/javascript">
-</script>
+
 {% endblock %}
