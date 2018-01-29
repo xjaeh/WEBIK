@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Regiser
+    Register
 {% endblock %}
 
 {% block main %}
@@ -22,7 +22,7 @@
             {% endif %}
             <h3> Register </h3>
             <div class="form-group">
-                <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" />
+                <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" {% if session.get("username") %}  value = {{session.get("username")}} {% endif %} />
             </div>
             <div class="form-group">
                 <input class="form-control" name="password" placeholder="Password" type="password"/>
@@ -31,41 +31,48 @@
                 <input class="form-control" name="confirmpassword" placeholder=" Confirm Password" type="password"/>
             </div>
             <div class="form-group">
-                <input class="form-control" name="fullname" placeholder="Full name" type="text"/>
+                <input class="form-control" name="fullname" placeholder="Full name" type="text" {% if session.get("fullname") %}  value = {{session.get("fullname")}} {% endif %}/>
             </div>
             <div class="form-group">
-                <input class="form-control" name="email" placeholder="E-mailadress" type="text"/>
+                <input class="form-control" name="email" placeholder="E-mailadress" type="text" {% if session.get("email") %}  value = {{session.get("email")}} {% endif %}/>
             </div>
             <div class="form-group" >
                     <div class="dropdown">
                       <select class="form-control" name="work">
+                        {% if session.get("am") %} <option value = {{session.get("am")}}> {{session.get("am")}} </option> {% endif %}
                         <option value="I am a ...">I am a ... </option>
-                        <option value="Photographer">Photographer</option>
-                        <option value="Model">Model</option>
-                        <option value="Mua(h)">Mua(h)</option>
-                        <option value="Producer">Producer</option>
+                        {% if session.get("am") != "Photographer" %} <option value="Photographer">Photographer</option> {% endif %}
+                        {% if session.get("am") != "Model" %} <option value="Model">Model</option> {% endif %}
+                        {% if session.get("am") != "Mua(h)" %} <option value="Mua(h)">Mua(h)</option> {% endif %}
+                        {% if session.get("am") != "Producer" %} <option value="Producer">Producer</option> {% endif %}
                       </select>
+            <br>
             <div class="form-group" width=100%>
                     <div class="dropdown" >
                       <select name="search" class="form-control">
+                        {% if session.get("look") %} <option value = {{session.get("look")}}>   {{session.get("look")}} </option> {% endif %}
                         <option value="I am looking for a ...">I am looking for a ... </option>
-                        <option value="Photographer">Photographer</option>
-                        <option value="Model">Model</option>
-                        <option value="Mua(h)">Mua(h)</option>
-                        <option value="Producer">Producer</option>
+                        {% if session.get("look") != "Photographer" %} <option value="Photographer">Photographer</option> {% endif %}
+                        {% if session.get("look") != "Model" %} <option value="Model">Model</option> {% endif %}
+                        {% if session.get("look") != "Mua(h)" %} <option value="Mua(h)">Mua(h)</option> {% endif %}
+                        {% if session.get("look") != "Producer" %} <option value="Producer">Producer</option>  {% endif %}
                       </select>
+            </div>
             <br>
             <p> Optional: </p>
             <div class="form-group" width=100%>
                     <div class="dropdown" >
                       <select name="extra_search" class="form-control">
-                        <option value="Optional"> Extra search request</option>
-                        <option value="Photographer">Photographer</option>
-                        <option value="Model">Model</option>
-                        <option value="Mua(h)">Mua(h)</option>
-                        <option value="Producer">Producer</option>
+                        {% if session.get("extra") %} <option value = {{session.get("extra")}}> {{session.get("extra")}} </option> {% endif %}
+                        <option value="Optional">Optional extra search request</option>
+                        {% if session.get("extra") != "Photographer" %} <option value="Photographer">Photographer</option> {% endif %}
+                        {% if session.get("extra") != "Model" %} <option value="Model">Model</option> {% endif %}
+                        {% if session.get("extra") != "Mua(h)" %} <option value="Mua(h)">Mua(h)</option> {% endif %}
+                        {% if session.get("extra") != "Producer" %} <option value="Producer">Producer</option> {% endif %}
                       </select>
-            <br
+                        <br
+
+            </div>
             <div class="form-group">
                 <button class="btn btn-default" type="submit">Register</button>
             </div>
