@@ -69,9 +69,8 @@ def registerroute():
         if not request.form.get("fullname") or " " not in request.form.get("fullname"):
             return apology("register.html","Please fill in your first and last name")
 
-        if not request.form.get("email") \
-        or "@" not in request.form.get("email") or "." not in request.form.get("email"):
-            return apology("register.html","Please fill in a valid email address")
+        if not request.form.get("email"):
+            return apology("register.html","Please fill in a email address")
 
         if request.form.get("work") == "I am a ...":
             return apology("register.html","Please fill your profession in")
@@ -180,7 +179,7 @@ def findroute():
         if reject:
             status= "false"
 
-        # Function that changes the status of the two id's
+        # Function that changes the status of the two id'ss
         status_update(id,finding,status)
 
         # Function that checks if the id's accepted eachother and sends email
@@ -193,9 +192,10 @@ def findroute():
     else:
         if finding == 'empty':
             return apology("find.html", "no more matches available")
-        pictures = profile(finding)
-        work = find_work(id,finding)
-        return render_template("find.html",pictures=reversed(pictures), work=work)
+        else:
+            pictures = profile(finding)
+            work = find_work(id,finding)
+            return render_template("find.html", pictures=reversed(pictures), work=work)
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -344,19 +344,18 @@ def chatroute():
                 return render_template("profile2.html",fullname=fullname, pictures=pictures)
             elif request.form.get(item):
                 session["other_id"] = item
-        otherid = session.get("other_id")
+        other_id = session.get("other_id")
         if request.form.get("message"):
             message = request.form.get("message")
-            chat(id, otherid, message)
-        messages = conversation(id, otherid)
+            chat(id, other_id, message)
+        messages = conversation(id, other_id)
         return redirect(url_for("chatroute"))
 
     else:
-        otherid = contact[0]["other_id"]
+        other_id = contact[0]["other_id"]
         if session.get("other_id") == None:
-            session["other_id"] = otherid
-        otherid = session.get("other_id")
-        messages = conversation(id, otherid)
+            session["other_id"] = other_id
+        other_id = session.get("other_id")
+        messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, otherid=otherid)
-
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id)

@@ -10,6 +10,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 # Initialises database
 db = SQL("sqlite:///WEBIK.db")
 
+
 def register(username, hash, fullname, work, search, email, extra_search):
     """Register machanism"""
 
@@ -24,6 +25,22 @@ def register(username, hash, fullname, work, search, email, extra_search):
     elif email in emails:
         return "error_email"
 
+    try:
+        server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+
+        # Creates a seperate  email for each person
+        subject = "Welcome"
+
+        with open("email_templates/match.txt", "r") as mail:
+            text = str(mail).format(fullname)
+
+        message = 'Subject: {}\n\n{}'.format(subject, text)
+
+        server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+        server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+    except:
+        return "error_invalid_email"
+
     # Puts user information into the database
     else:
         db.execute("INSERT INTO users (username, hash, fullname, work, search, email, extra_search) VALUES \
@@ -35,6 +52,7 @@ def register(username, hash, fullname, work, search, email, extra_search):
     id = rows[0]["id"]
     return rows[0]["id"]
 
+
 def login(username, hash):
     """Login mechanism"""
 
@@ -44,6 +62,7 @@ def login(username, hash):
         return False
     else:
         return rows[0]["id"]
+
 
 def account(fullname, old_password, password, confirm_password, email, work, search, extra_search):
     """Let's the user change his/her personal information"""
@@ -116,8 +135,8 @@ def find(id):
     possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
-    already_seen= db.execute("SELECT otherid FROM matchstatus WHERE id=:id", id=id)
-    already_seen_set= set(already["otherid"] for already in already_seen)
+    already_seen= db.execute("SELECT other_id FROM matchstatus WHERE id=:id", id=id)
+    already_seen_set= set(already["other_id"] for already in already_seen)
 
     # Returns a user id from possible_matches minus the ones already seen
     show = possible_matches_set - already_seen_set
@@ -144,26 +163,26 @@ def delete(picture, id):
 
     return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
 
-def status_update(id,otherid,status):
+def status_update(id,other_id,status):
     """Inserts status into database"""
 
-    db.execute("INSERT INTO matchstatus (id, otherid, status) VALUES (:id, :otherid, :status)",\
-                id=id, otherid=otherid, status=status)
+    db.execute("INSERT INTO matchstatus (id, other_id, status) VALUES (:id, :other_id, :status)",\
+                id=id, other_id=other_id, status=status)
 
-def status_check(id, otherid, other_username):
+def status_check(id, other_id):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
-    status1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=id, otherid=otherid)
-    status2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and otherid=:otherid", id=otherid, otherid=id)
+    status1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=id, other_id=other_id)
+    status2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=other_id, other_id=id)
 
     # Returns True or False depending upon mutual like or not
     try:
         status1[0]["status"] == "true" and status2[0]["status"] == "true"
         return True
-        other_username = db.execute("SELECT username FROM users WHERE id=:otherid", id=otherid)
+        other_username = db.execute("SELECT username FROM users WHERE id=:other_id", id=other_id)
         db.execute("INSERT INTO pairs (id, other_id, other_username) VALUES (:id, :other_id, :other_username)", \
-                    id=id, otherid=otherid, other_username=other_username)
+                    id=id, other_id=other_id, other_username=other_username)
     except:
         return False
 
@@ -193,57 +212,56 @@ def retrieve_password(username, email):
             db.execute("UPDATE users SET hash =:hash WHERE username=:username" , \
                     hash = pwd_context.hash(password), username=username)
 
-            # Sends new password to user and sets email structure
             server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
-            subject = "Forgot password"
-            text = "Hello, {}!\n\n your new password is: \n\n '{}' \n\n you can now use this password to log into your account. \n don't forget to change youer password after logging in.".format(rows[0]["fullname"], password)
+
+            # Creates a seperate  email for each person
+            subject = "Welcome"
+
+            with open("email_templates/welcome.txt", "r") as mail:
+                text = str(mail).format(username, password)
+
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
-        # Sets up emailaccount
-        server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-        server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+            server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+            server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
-def inform_match(id, otherid):
+def inform_match(id, other_id):
     """Sends new password to user and his/her match in case of a match"""
 
     # Selects user and match information
     user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=otherid)
+    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
 
     # Sets up emailserver
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 
     # Creates a seperate  email for each person
     subject = "You got a match"
-    text1 = """ Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress:
-             {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(userinfo[0]["fullname"],\
-            matchinfo[0]["fullname"], userinfo[0]["email"])
-    message1 = 'Subject: {}\n\n{}'.format(subject, text1)
 
-    text2 = """Hello, {}!\n\n Congratulations! You and {} just got a match. Here's there emailadress:
-            {} \n \n we hope you have a pleasant collaboration. \n \n Tistacy""".format(matchinfo[0]["fullname"],\
-            userinfo[0]["fullname"], matchinfo[0]["email"])
+    with open("email_templates/match.txt", "r") as mail:
+        text1 = str(mail).format(user_info[0]["fullname"],match_info[0]["fullname"],match_info[0]["email"])
+        text2 = str(mail).format(match_info[0]["fullname"],user_info[0]["fullname"],user_info[0]["email"])
+
+    message1 = 'Subject: {}\n\n{}'.format(subject, text1)
     message2 = 'Subject: {}\n\n{}'.format(subject, text2)
 
     server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
 
     # Sends each message to the corresponding user
-    server.sendmail("tistacyhelpdesk@gmail.com", userinfo[0]["email"], message1)
-    server.sendmail("tistacyhelpdesk@gmail.com", matchinfo[0]["email"], message2)
+    server.sendmail("tistacyhelpdesk@gmail.com", user_info[0]["email"], message1)
+    server.sendmail("tistacyhelpdesk@gmail.com", match_info[0]["email"], message2)
 
     return True
 
 def contacts(id):
     return db.execute("SELECT * FROM pairs WHERE id=:id", id=id)
 
-def conversation(id, otherid):
+def conversation(id, other_id):
 
-    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:otherid OR id=:otherid AND other_id=:id", \
-                    id=id, otherid=otherid)
+    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:other_id OR id=:other_id AND other_id=:id", \
+                    id=id, other_id=other_id)
 
-def chat(id,otherid,message):
+def chat(id,other_id,message):
 
     return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
-                        message=message, id=id, other_id=otherid)
-
-
+                        message=message, id=id, other_id=other_id)

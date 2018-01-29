@@ -8,17 +8,21 @@
     <form action="{{ url_for('findroute') }}" method="post">
         <fieldset>
             <body>
-                <h2 align="center"> {{ work[0]["work"] }}</h2>
+                {% if work %}
+                    <h3><em> Find your future collaboration </em></h3>
+                    <h3 align="center"> {{ work[0]["work"] }}</h3>
+                {% endif %}
                     <div class="gallery">
                         {% for picture in pictures %}
                         <a>
                             {% if (picture.picture).startswith("http") or (picture.picture).startswith("data") %}
-                            <img src="{{picture.picture}}" width="375" height="250" style="padding:5px">
+                            <img src="{{picture.picture[:6]}}" width="375" height="250" style="padding:5px">
                             {% else %}
-                            <img src="static/img/{{picture.picture}}" width="375" height="250" style="padding:5px">
+                            <img src="static/img/{{picture.picture[:6]}}" width="375" height="250" style="padding:5px">
                             {% endif %}
                         </a>
                         {% endfor %}
+                    <br>
                 {% if bottom %}
                 <div class="row">
                     <div class="col-lg-4">
@@ -32,21 +36,12 @@
                   </div>
                 </div>
                 {% else %}
+                <br>
                 <p align="center">
                 <form  >
                     <input class="btn btn-danger" type="submit" value="reject" name="reject" style="width:300px" >
                     <input class="btn btn-success" type="submit" value="accept" name="accept" style="width:300px" >
                 </form>
-                    <div class="gallery">
-                        {% for picture in pictures %}
-                        <a>
-                            {% if (picture.picture).startswith("http") or (picture.picture).startswith("data") %}
-                            <img src="{{picture.picture}}" width="375" height="250" style="padding:5px">
-                            {% else %}
-                            <img src="static/img/{{picture.picture}}" width="375" height="250" style="padding:5px">
-                            {% endif %}
-                        </a>
-                        {% endfor %}
                 {% endif %}
             <br>
                 </div>

@@ -20,6 +20,7 @@
               </div>
             </div>
             {% endif %}
+            <h3> Register </h3>
             <div class="form-group">
                 <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" {% if session.get("username") %}  value = {{session.get("username")}} {% endif %} />
             </div>
@@ -58,15 +59,24 @@
                       </select>
             </div>
             <br>
+            <p> Optional: </p>
             <div class="form-group" width=100%>
                     <div class="dropdown" >
                       <select name="extra_search" class="form-control">
+<<<<<<< HEAD
                         {% if session.get("extra") %} <option value = {{session.get("extra")}}> {{session.get("extra")}} </option> {% endif %}
                         <option value="Optional">Optional extra search request</option>
                         {% if session.get("extra") != "Photographer" %} <option value="Photographer">Photographer</option> {% endif %}
                         {% if session.get("extra") != "Model" %} <option value="Model">Model</option> {% endif %}
                         {% if session.get("extra") != "Mua(h)" %} <option value="Mua(h)">Mua(h)</option> {% endif %}
                         {% if session.get("extra") != "Producer" %} <option value="Producer">Producer</option> {% endif %}
+=======
+                        <option value="Optional"> Extra search request</option>
+                        <option value="Photographer">Photographer</option>
+                        <option value="Model">Model</option>
+                        <option value="Mua(h)">Mua(h)</option>
+                        <option value="Producer">Producer</option>
+>>>>>>> 905b7a1b51517157331ee0c11e9ba116fb5ea289
                       </select>
                         <br
 
