@@ -265,4 +265,3 @@ def chat(id,other_id,message):
 
     return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
                         message=message, id=id, other_id=other_id)
-
