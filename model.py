@@ -153,10 +153,10 @@ def find_work(id,finding):
     work = db.execute("SELECT work FROM users WHERE id=:id", id=finding)
     return work
 
-def select(id):
+def select(finding):
     """Returns all pictures from the users id"""
 
-    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
+    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=finding)
     return picture
 
 def delete(picture, id):
@@ -273,3 +273,14 @@ def chat(id,other_id,message):
 
     return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
                         message=message, id=id, other_id=other_id)
+
+def pair(id, other_id):
+    user1 = db.execute("SELECT * FROM users WHERE id=:id", id=id)
+    user2 = db.execute("SELECT * FROM users WHERE id=:other_id", other_id=other_id)
+    db.execute("INSERT INTO pairs (id, username, other_id, other_username) VALUES \
+    (:id, :username, :other_id, :other_username)", id=user1[0]["id"], username=user1[0]["username"] \
+    , other_id=user2[0]["id"], other_username=user2[0]["username"])
+    db.execute("INSERT INTO pairs (id, username, other_id, other_username) VALUES \
+    (:id, :username, :other_id, :other_username)", id=user2[0]["id"], username=user2[0]["username"] \
+    , other_id=user1[0]["id"], other_username=user1[0]["username"])
+    return True

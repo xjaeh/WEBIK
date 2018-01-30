@@ -186,6 +186,7 @@ def findroute():
         check = status_check(id,finding)
         if check == True:
             # sends email in case of match
+            pair(id,finding)
             inform_match(id,finding)
         return redirect(url_for("findroute"))
 
@@ -195,7 +196,8 @@ def findroute():
         if finding == 'empty':
             return apology("find.html", "no more matches available")
         else:
-            pictures = profile(finding)
+
+            pictures = select(finding)
             pictures = pictures[-6:]
             work = find_work(id,finding)
             length = len(pictures)
@@ -315,7 +317,6 @@ def deleteroute():
     else:
         return render_template("delete.html", rows = selection)
 
-
 @app.route("/forgotpassword", methods=["GET", "POST"])
 def forgotpasswordroute():
     """Allows the user to request a new password"""
@@ -355,15 +356,17 @@ def chatroute():
     id = session.get("user_id")
     contact = contacts(id)
 
-    # if user reached route via POST
+    # If user reached route via POST
     if request.method == "POST":
         ids=[str(person["other_id"]) for person in contact]
+
         for item in ids:
             if request.form.get(item) == "Info":
                 fullname = profile_fullname(int(item))
                 pictures = profile(int(item))
                 length = len(pictures)
-                return render_template("profile2.html",fullname=fullname, pictures=reversed(pictures), length=length)
+                return render_template("profile2.html",fullname=fullname, \
+                                        pictures=reversed(pictures), length=length)
             elif request.form.get(item):
                 session["other_id"] = item
         other_id = session.get("other_id")
@@ -371,7 +374,8 @@ def chatroute():
             message = request.form.get("message")
             chat(id, other_id, message)
         messages = conversation(id, other_id)
-        return redirect(url_for("chatroute"))
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
+
 
     else:
         try:
@@ -383,4 +387,4 @@ def chatroute():
         other_id = session.get("other_id")
         messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id)
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
