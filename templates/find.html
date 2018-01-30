@@ -22,6 +22,9 @@
                             {% endif %}
                         </a>
                         {% endfor %}
+                        {% if length == 0 %}
+                        <h3> This profile has no pictures yet. </h3>
+                        {% endif %}
                     <br>
                 {% if bottom %}
                 <div class="row">

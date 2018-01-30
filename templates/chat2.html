@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Chat
+{% endblock %}
+
+{% block main %}
+<form style="align:middle">
+  <h1 align="center"> You have no contacts yet.</h1>
+    <p align="center">
+    <form>
+      <button class="btn btn-default" formaction="{{ url_for('findroute') }}" formmethod="get" type="Find your match" style="width:200px"> Find your Match</button>
+    </form>
+
+</form>
+{% endblock %}

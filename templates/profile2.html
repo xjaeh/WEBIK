@@ -5,19 +5,9 @@
 {% endblock %}
 
 {% block main %}
-    <form action="{{ url_for('profileroute') }}" method="post">
+    <form>
         <fieldset>
             <body>
-               <form>
-                    <p class="bs-component">
-                        <a href="{{ url_for('uploadroute') }}"  class="btn btn-default btn-lg btn-block"> Add image</a>
-                    </p>
-                </form>
-                <form>
-                    <p class="bs-component">
-                        <a href="{{ url_for('deleteroute') }}"  class="btn btn-default btn-lg btn-block"> Delete image</a>
-                    </p>
-                </form>
                 <h2 align="center"> {{ fullname[0]["fullname"] }}</h2>
                     <div class="gallery">
                         {% for picture in pictures %}
@@ -29,11 +19,10 @@
                             {% endif %}
                         </a>
                         {% endfor %}
-                        {% if length == 0 %}
-                        <h3> This profile has no pictures yet. </h3>
-                        {% endif %}
-                </div>
-                </div>
+                    </div>
+                {% if length == 0 %}
+                <h3> This profile has no pictures yet. </h3>
+                {% endif %}
             </body>
         </fieldset>
     </form>
