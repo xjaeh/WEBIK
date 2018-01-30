@@ -317,7 +317,6 @@ def deleteroute():
     else:
         return render_template("delete.html", rows = selection)
 
-
 @app.route("/forgotpassword", methods=["GET", "POST"])
 def forgotpasswordroute():
     """Allows the user to request a new password"""
@@ -371,12 +370,11 @@ def chatroute():
             elif request.form.get(item):
                 session["other_id"] = item
         other_id = session.get("other_id")
-        name = [person for person in contact if person["other_id"] == int(other_id)]
         if request.form.get("message"):
             message = request.form.get("message")
             chat(id, other_id, message)
         messages = conversation(id, other_id)
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id, name=name[0]["other_username"])
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
 
 
     else:
@@ -387,7 +385,6 @@ def chatroute():
         if session.get("other_id") == None:
             session["other_id"] = other_id
         other_id = session.get("other_id")
-        name = [person for person in contact if person["other_id"] == other_id]
         messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id, name=name[0]["other_username"])
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
