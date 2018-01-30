@@ -47,7 +47,7 @@ def registerroute():
         session["username"] = request.form.get("username")
         session["fullname"] = request.form.get("fullname")
         session["email"] = request.form.get("email")
-        session["am"] = request.form.get("amwork")
+        session["am"] = request.form.get("work")
         session["look"] = request.form.get("search")
         session["extra"] = request.form.get("extra_search")
 
@@ -236,7 +236,7 @@ def accountroute():
                 subject = "New password"
 
                 with open("email_templates/change_password.txt", "r") as mail:
-                    text = str(mail).format(fullname)
+                    text = str(mail.read()).format(fullname)
 
                 message = 'Subject: {}\n\n{}'.format(subject, text)
 
