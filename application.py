@@ -183,7 +183,7 @@ def findroute():
         if finding == 'empty':
             return apology("find.html", "no more matches available")
         else:
-            pictures = profile(finding)
+            pictures = select(finding)
             work = find_work(id,finding)
             return render_template("find.html", pictures=reversed(pictures), work=work)
 

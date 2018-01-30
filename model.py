@@ -152,10 +152,10 @@ def find_work(id,finding):
     work = db.execute("SELECT work FROM users WHERE id=:id", id=finding)
     return work
 
-def select(id):
+def select(finding):
     """Returns all pictures from the users id"""
 
-    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=id)
+    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=finding)
     return picture
 
 def delete(picture, id):
