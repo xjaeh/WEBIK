@@ -1,1 +1,6 @@
 Welcome to Tistacy {}.
+
+you've just created an account on Collab Studio with this emailadress.
+We'll be using this emailadress to inform you on new matches and if you ever forget your username or password, we'll send it to this adress.
+
+Collab Studio

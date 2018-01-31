@@ -1,6 +1,8 @@
-congratulations {}!
+Congratulations {}!
 
-you just got a match with {}
-here's {}'s emailaddress: {}
+You just got a match with {}
+You can now chat with {} on our site.
 
-we hope you have a pleasant collaboration!
+We hope you have a pleasant collaboration!
+
+Collab Studio
