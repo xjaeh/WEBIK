@@ -32,7 +32,7 @@ register, login, logout, upload, delete, extra search en stylecheck.
 HTML's, profileroute, homepage, howitworks, findroute, logo en chat.
 
 ### Jasper:
-databases aanmaken, accoutroutes, mailfuncties,
+databases aanmaken, accoutroutes, mailfuncties.
 
 ## Extra uitleg voor navigatie:
 
