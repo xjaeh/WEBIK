@@ -47,10 +47,9 @@ def registerroute():
         session["username"] = request.form.get("username")
         session["fullname"] = request.form.get("fullname")
         session["email"] = request.form.get("email")
-        session["am"] = request.form.get("amwork")
+        session["am"] = request.form.get("work")
         session["look"] = request.form.get("search")
         session["extra"] = request.form.get("extra_search")
-
 
         # Ensure username, password and password confirmation are filled in
         # Otherwise it returns apology
@@ -101,7 +100,7 @@ def registerroute():
     # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
         fullname = str(request.form.get("fullname"))
-        return render_template("register.html", fullname=fullname)
+        return render_template("register.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -166,7 +165,7 @@ def findroute():
     # Initialize variables
     status = "temporary"
     id = session.get("user_id")
-    finding=find(id)
+    finding = find(id)
 
     # If user reaches route via POST
     if request.method == "POST":
@@ -186,7 +185,7 @@ def findroute():
         check = status_check(id,finding)
         if check == True:
             # sends email in case of match
-            pairs(id,finding)
+            pair(id,finding)
             inform_match(id,finding)
         return redirect(url_for("findroute"))
 
@@ -238,7 +237,7 @@ def accountroute():
                 subject = "New password"
 
                 with open("email_templates/change_password.txt", "r") as mail:
-                    text = str(mail).format(fullname)
+                    text = str(mail.read()).format(fullname)
 
                 message = 'Subject: {}\n\n{}'.format(subject, text)
 
@@ -286,8 +285,10 @@ def uploadroute():
         # Saves filename from url or from a local file
         if request.form.get("url"):
             filename = request.form.get("url")
-        else:
+        elif request.files["photo"]:
             filename = photos.save(request.files['photo'])
+        else:
+            return apology("upload.html", "please select a photo")
 
         # Function that saves filename to database
         upload(filename, id)
@@ -354,12 +355,16 @@ def email_sentroute():
 def chatroute():
     """displays chat.html"""
     id = session.get("user_id")
+    # Create a dict of all users the user matched with
     contact = contacts(id)
 
     # If user reached route via POST
     if request.method == "POST":
+
+        # Create a list of all id's of all users the user matched with
         ids=[str(person["other_id"]) for person in contact]
 
+        # if the user clicked on the "info" in a chatroom, render that user's profile
         for item in ids:
             if request.form.get(item) == "Info":
                 fullname = profile_fullname(int(item))
@@ -369,19 +374,26 @@ def chatroute():
                                         pictures=reversed(pictures), length=length)
             elif request.form.get(item):
                 session["other_id"] = item
+
         other_id = session.get("other_id")
+        # Send the user's message, id the user submitted one
         if request.form.get("message"):
             message = request.form.get("message")
             chat(id, other_id, message)
         messages = conversation(id, other_id)
-        return render_template("chat.html", contacts=contact,messages=messages, \
-                                id=id, other_id=int(other_id))
 
+        # refreshes the chat
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
+
+    # Else if user reached route via GET (as by clicking a link or via redirect)
     else:
+        # Open chatroom on first contact in contact
         try:
             other_id = contact[0]["other_id"]
+        # if user has no contacts, render chat2.html
         except:
             return render_template("chat2.html")
+
         if session.get("other_id") == None:
             session["other_id"] = other_id
         other_id = session.get("other_id")
