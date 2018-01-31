@@ -7,19 +7,19 @@ import random
 import string
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 
-# Initialises database
+# Initializes database
 db = SQL("sqlite:///WEBIK.db")
 
 
 def register(username, hash, fullname, work, search, email, extra_search):
     """Register machanism"""
 
-    # Initialize variables
+    # Initializez variables
     users = db.execute("SELECT * FROM users")
     usernames = [user["username"] for user in users]
     emails = [user["email"] for user in users]
 
-    # Check if username and email already exists
+    # Checkz if username and email already exists
     if username in usernames:
         return "error_user"
     elif email in emails:
@@ -41,6 +41,7 @@ def register(username, hash, fullname, work, search, email, extra_search):
             server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
             server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
+        # Returns an error in cade of unreachable email adress
         except:
             return "error_invalid_mail"
 
@@ -111,19 +112,27 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
         db.execute("UPDATE users SET extra_search=:extra_search WHERE id=:id" , \
         extra_search=extra_search, id=session["user_id"], )
 
+
 def profile(id):
     """Returns all photos under the users id in reverse order"""
+
     photos = db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
     return photos[::1]
 
+
 def profile_fullname(id):
     """Returns fullname of user"""
+
     fullname = db.execute("SELECT fullname FROM users WHERE id=:id", id=id)
     return fullname
 
+
 def upload(filename, id):
     """Lets the user upload a new photo and adds it to the database"""
-    db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)", id=id, picture=filename)
+
+    db.execute("INSERT INTO pictures (id, picture) VALUES (:id, :picture)",\
+                id=id, picture=filename)
+
 
 def find(id):
     """Returns a potential match id"""
@@ -132,7 +141,8 @@ def find(id):
     search = db.execute("SELECT search FROM users WHERE id=:id", id=id)
     extra_search = db.execute("SELECT extra_search FROM users WHERE id=:id", id=id)
     possible_matches = db.execute("SELECT id FROM users WHERE work=:search OR work=:extra_search", \
-                                    search=search[0]["search"], extra_search=extra_search[0]["extra_search"])
+                                    search=search[0]["search"], \
+                                    extra_search=extra_search[0]["extra_search"])
     possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
@@ -147,11 +157,13 @@ def find(id):
     else:
         return random.choice(shows)
 
+
 def find_work(id,finding):
     """Returns profession of user"""
 
     work = db.execute("SELECT work FROM users WHERE id=:id", id=finding)
     return work
+
 
 def select(finding):
     """Returns all pictures from the users id"""
@@ -159,10 +171,12 @@ def select(finding):
     picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=finding)
     return picture
 
+
 def delete(picture, id):
     """Lets the user remove a picture from the database"""
 
     return db.execute("DELETE FROM pictures WHERE picture=:picture", picture=picture)
+
 
 def status_update(id,other_id,status):
     """Inserts status into database"""
@@ -184,9 +198,12 @@ def inform_match(id, other_id):
     # Creates a seperate  email for each person
     subject = "You got a match"
 
+    # Opens new_password.txt as template and fills it in
     with open("email_templates/match.txt", "r") as mail:
-        text_1 = str(mail.read()).format(user_info[0]["fullname"], match_info[0]["fullname"], match_info[0]["fullname"])
-        text_2 = str(mail.read()).format(match_info[0]["fullname"], user_info[0]["fullname"], user_info[0]["fullname"])
+        text_1 = str(mail.read()).format(user_info[0]["fullname"], \
+                    match_info[0]["fullname"], match_info[0]["fullname"])
+        text_2 = str(mail.read()).format(match_info[0]["fullname"], \
+                    user_info[0]["fullname"], user_info[0]["fullname"])
 
     message_1 = 'Subject: {}\n\n{}'.format(subject, text_1)
     message_2 = 'Subject: {}\n\n{}'.format(subject, text_2)
@@ -205,8 +222,10 @@ def status_check(id, other_id):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
-    status_1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=id, other_id = other_id)
-    status_2 = db.execute("SELECT status FROM matchstatus WHERE id=:other_id and other_id=:id", other_id = other_id, id=id)
+    status_1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", \
+                    id=id, other_id = other_id)
+    status_2 = db.execute("SELECT status FROM matchstatus WHERE id=:other_id and other_id=:id", \
+                    other_id = other_id, id=id)
 
     # Returns True or False depending upon mutual like or not
     if len(status_1) == 0 or len(status_2) == 0:
@@ -217,9 +236,12 @@ def status_check(id, other_id):
     else:
         return False
 
+
 def password_generator(chars=string.ascii_uppercase + string.digits):
     """Generate a random password with length 10"""
+
     return ''.join(random.choice(chars) for i in range(10))
+
 
 def retrieve_password(username, email):
     """Allows the user to have a new password sent to them"""
@@ -235,6 +257,7 @@ def retrieve_password(username, email):
         # Checks if email is correct and return error code
         if email != rows[0]["email"]:
             return 1
+
         else:
             # Generates a new password
             password = password_generator()
@@ -243,43 +266,63 @@ def retrieve_password(username, email):
             db.execute("UPDATE users SET hash =:hash WHERE username=:username" , \
                     hash = pwd_context.hash(password), username=username)
 
+            # Sets up server
             server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 
             # Creates a seperate  email for each person
             subject = "New Password"
 
+            # Opens new_password.txt as template and fills it in
             with open("email_templates/new_password.txt", "r") as mail:
-                text = str(mail.read()).format(fullname, password)
+                text = str(mail.read()).format(username, password)
 
+            # Sets up mail
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
+            # Sends mail
             server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
             server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
 
-
 def contacts(id):
+    """Loads all contacts from the pairs database"""
+
     return db.execute("SELECT * FROM pairs WHERE id=:id", id=id)
 
 
 def conversation(id, other_id):
+    """Loads all messages from the messages database between the two given id's"""
 
-    return db.execute("SELECT * FROM messages WHERE id=:id AND other_id=:other_id OR id=:other_id AND other_id=:id", \
-                    id=id, other_id=other_id)
+    return db.execute("""SELECT * FROM messages WHERE id=:id
+                        AND other_id=:other_id OR id=:other_id AND other_id=:id""", \
+                        id=id, other_id=other_id)
 
 
 def chat(id,other_id,message):
+    """Inserts a message with a to and from into the messages database"""
 
-    return db.execute("INSERT INTO messages (message, id, other_id) VALUES (:message, :id, :other_id)", \
+    return db.execute("""INSERT INTO messages (message, id, other_id)
+                        VALUES (:message, :id, :other_id)""", \
                         message=message, id=id, other_id=other_id)
 
+
 def pair(id, other_id):
+    """Adds a new pair to the pairs database"""
+
+    # stores information of both id's in seperate variables
     user1 = db.execute("SELECT * FROM users WHERE id=:id", id=id)
     user2 = db.execute("SELECT * FROM users WHERE id=:other_id", other_id=other_id)
+
+    # Inserts a pair with id = user_1 and other_id = user_2
     db.execute("INSERT INTO pairs (id, username, other_id, other_username) VALUES \
-    (:id, :username, :other_id, :other_username)", id=user1[0]["id"], username=user1[0]["username"] \
-    , other_id=user2[0]["id"], other_username=user2[0]["username"])
+            (:id, :username, :other_id, :other_username)", id=user1[0]["id"], \
+            username=user1[0]["username"], other_id=user2[0]["id"], \
+            other_username=user2[0]["username"])
+
+    # Inserts a pair with id = user_2 and other_id = user_1
     db.execute("INSERT INTO pairs (id, username, other_id, other_username) VALUES \
-    (:id, :username, :other_id, :other_username)", id=user2[0]["id"], username=user2[0]["username"] \
-    , other_id=user1[0]["id"], other_username=user1[0]["username"])
+            (:id, :username, :other_id, :other_username)", id=user2[0]["id"], \
+            username=user2[0]["username"], other_id=user1[0]["id"], \
+            other_username=user1[0]["username"])
+
     return True
