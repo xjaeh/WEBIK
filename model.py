@@ -38,8 +38,8 @@ def register(username, hash, fullname, work, search, email, extra_search):
 
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
-            server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-            server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+            server.login("collabstudiohelpdesk@gmail.com", "webikcollab")
+            server.sendmail("collabstudiohelpdesk@gmail.com", email, message)
 
         # Returns an error in cade of unreachable email adress
         except:
@@ -211,11 +211,11 @@ def inform_match(id, other_id):
     message_2 = 'Subject: {}\n\n{}'.format(subject, text_2)
 
     # log into emailaccount
-    server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+    server.login("collabstudiohelpdesk@gmail.com", "webikcollab")
 
     # Sends each message to the corresponding user
-    server.sendmail("tistacyhelpdesk@gmail.com", user_info[0]["email"], message_1)
-    server.sendmail("tistacyhelpdesk@gmail.com", match_info[0]["email"], message_2)
+    server.sendmail("collabstudiohelpdesk@gmail.com", user_info[0]["email"], message_1)
+    server.sendmail("collabstudiohelpdesk@gmail.com", match_info[0]["email"], message_2)
 
     return True
 
@@ -281,8 +281,8 @@ def retrieve_password(username, email):
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
             # Sends mail
-            server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-            server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+            server.login("collabstudiohelpdesk@gmail.com", "webikcollab")
+            server.sendmail("collabstudiohelpdesk@gmail.com", email, message)
 
 
 def contacts(id):
