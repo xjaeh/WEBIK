@@ -92,7 +92,6 @@ def registerroute():
 
     # Else if user reached route via GET
     else:
-        fullname = str(request.form.get("fullname"))
         return render_template("register.html")
 
 
@@ -103,7 +102,7 @@ def loginroute():
     # If user reached route via POST
     if request.method == "POST":
 
-        # Ensures username  and password are submitted
+        # Ensures username and password are submitted
         if not request.form.get("username"):
             return apology("login.html","Must provide username")
 
@@ -111,13 +110,14 @@ def loginroute():
             return apology("login.html","Must provide valid password")
 
         # Checks username and password combination
-        check = login(username=request.form.get("username"), hash=request.form.get("password"))
+        check = login(username=request.form.get("username"), \
+                hash=request.form.get("password"))
 
         # Returns apology if password and username don't match
         if check == False:
             return apology("login.html","Invalid username and password combination")
 
-        # Else, redirect user to workspace
+        # Else redirect user to workspace
         else:
             session["user_id"] = check
         return redirect(url_for("workspaceroute"))
@@ -181,18 +181,21 @@ def findroute():
         # Check if the id's accepted eachother
         check = status_check(id,finding)
         if check == True:
-            # sends email in case of match
+
+            # Sends email in case of match
             pair(id,finding)
             inform_match(id,finding)
+
         return redirect(url_for("findroute"))
 
     # If user reached route via GET
     else:
+
         # Return apology when no more matches are availible
         if finding == 'empty':
             return apology("find.html", "No more matches available")
 
-        # Else, shows a random profile from the list of possible matches
+        # Else show a random profile from the list of possible matches
         else:
             pictures = select(finding)
             pictures = pictures[-6:]
@@ -205,7 +208,7 @@ def findroute():
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profileroute():
-    """Display user's profile """
+    """Display user's profile"""
 
     id = session.get("user_id")
     pictures = profile(id)
@@ -270,7 +273,7 @@ def accountroute():
             return apology("account.html", \
             "Old password invalid")
 
-        # Else, redirect user to workspace
+        # Else redirect user to workspace
         else:
             return redirect(url_for("workspaceroute"))
 
@@ -317,34 +320,37 @@ def deleteroute():
     picture = request.form.get("delete")
     selection = select(id)
 
-    # If user reached rout via POST
+    # If user reached route via POST
     if request.method == "POST":
         delete(picture, id)
         return redirect(url_for("profileroute"))
 
     # Else if user reached route via GET
     else:
-        return render_template("delete.html", rows = selection)
+        return render_template("delete.html", rows=selection)
 
 
 @app.route("/forgotpassword", methods=["GET", "POST"])
 def forgotpasswordroute():
     """Allows the user to request a new password"""
 
-    # If user reached rout via POST
+    # If user reached route via POST
     if request.method == "POST":
+
         # Ensures the user filled in all forms
         if not request.form.get("username") or not request.form.get("email"):
             return apology("forgotpassword.html", "Please fill in all fields")
+
+        # Changes the users password in the database and sends the user an email
         else:
-            # Changes the users password in the database and sends the user an email
             errorcode = retrieve_password(request.form.get("username"), request.form.get("email"))
 
-        # Tells the user what error occured
-        if errorcode == 0:
+        # Tells the user which error occured
+        if errorcode == "error_username":
             return apology("forgotpassword.html", "Username incorrect")
-        if errorcode == 1:
+        if errorcode == "error_email":
             return apology("forgotpassword.html", "Email incorrect")
+
         # Redirects the user to mail_sent.html in case of no error
         else:
             return redirect(url_for("email_sentroute"))
@@ -356,17 +362,18 @@ def forgotpasswordroute():
 
 @app.route("/email_sent", methods=["GET"])
 def email_sentroute():
-    """displays email_sent.html"""
+    """Displays email_sent.html"""
+
     return render_template("email_sent.html")
 
 
 @app.route("/chat", methods=["GET", "POST"])
 @login_required
 def chatroute():
-    """displays chat.html"""
+    """Displays chat.html"""
 
+    # Initializes variables
     id = session.get("user_id")
-    # Create a dict of all users the user matched with
     contact = contacts(id)
 
     # If user reached route via POST
@@ -383,11 +390,13 @@ def chatroute():
                 length = len(pictures)
                 return render_template("profile2.html",fullname=fullname, \
                                         pictures=reversed(pictures), length=length)
+
+            # Sets other users id
             elif request.form.get(item):
                 session["other_id"] = item
-
         other_id = session.get("other_id")
-        # Send the user's message, id the user submitted one
+
+        # Send the user's message, if the user submitted one
         if request.form.get("message"):
             message = request.form.get("message")
             chat(id, other_id, message)
@@ -399,13 +408,16 @@ def chatroute():
 
     # Else if user reached route via GET
     else:
+
         # Open chatroom on first contact in contact
         try:
             other_id = contact[0]["other_id"]
+
         # If user has no contacts, render chat2.html
         except:
             return render_template("chat2.html")
 
+        # Initializes variables for chat
         if session.get("other_id") == None:
             session["other_id"] = other_id
         other_id = session.get("other_id")

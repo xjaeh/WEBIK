@@ -14,14 +14,15 @@ db = SQL("sqlite:///WEBIK.db")
 def register(username, hash, fullname, work, search, email, extra_search):
     """Register machanism"""
 
-    # Initializez variables
+    # Initializes variables
     users = db.execute("SELECT * FROM users")
     usernames = [user["username"] for user in users]
     emails = [user["email"] for user in users]
 
-    # Checkz if username and email already exists
+    # Checks if username and email already exists
     if username in usernames:
         return "error_user"
+
     elif email in emails:
         return "error_email"
 
@@ -41,7 +42,7 @@ def register(username, hash, fullname, work, search, email, extra_search):
             server.login("collabstudiohelpdesk@gmail.com", "webikcollab")
             server.sendmail("collabstudiohelpdesk@gmail.com", email, message)
 
-        # Returns an error in cade of unreachable email adress
+        # Returns an error in case of unreachable email adress
         except:
             return "error_invalid_mail"
 
@@ -60,6 +61,7 @@ def login(username, hash):
 
     # Checks username and password combination and returns False or id
     rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
+
     if len(rows) != 1 or not pwd_context.verify(hash, rows[0]["hash"]):
         return False
     else:
@@ -77,15 +79,17 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
         else:
             return "error_fullname"
 
-    # Checks if all the passwordfields are filled in otherwise apology
+    # Checks if all the password fields are filled in otherwise apology
     if password or confirm_password or old_password:
         if not old_password or not password or not confirm_password:
             return "error_password"
+
         # Changes the password if the user submitted all passwords
         else:
             if password != confirm_password:
                 return "error_password_confirmation"
             rows = db.execute("SELECT * FROM users WHERE id=:id", id=session["user_id"])
+
             if pwd_context.verify(old_password, rows[0]["hash"]) == False:
                 return "error_password_verify"
             else:
@@ -116,15 +120,13 @@ def account(fullname, old_password, password, confirm_password, email, work, sea
 def profile(id):
     """Returns all photos under the users id in reverse order"""
 
-    photos = db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
-    return photos[::1]
+    return db.execute("SELECT picture FROM pictures WHERE id=:id", id=id)
 
 
 def profile_fullname(id):
     """Returns fullname of user"""
 
-    fullname = db.execute("SELECT fullname FROM users WHERE id=:id", id=id)
-    return fullname
+    return db.execute("SELECT fullname FROM users WHERE id=:id", id=id)
 
 
 def upload(filename, id):
@@ -154,24 +156,23 @@ def find(id):
     # Returns a user id from possible_matches minus the ones already seen
     show = possible_matches_set - already_seen_set - already_reject_set
     shows = [id for id in show]
+
     if shows == []:
         return 'empty'
     else:
         return random.choice(shows)
 
 
-def find_work(id,finding):
+def find_work(id,other_id):
     """Returns profession of user"""
 
-    work = db.execute("SELECT work FROM users WHERE id=:id", id=finding)
-    return work
+    return db.execute("SELECT work FROM users WHERE id=:id", id=other_id)
 
 
-def select(finding):
+def select(other_id):
     """Returns all pictures from the users id"""
 
-    picture = db.execute("SELECT * FROM pictures WHERE id=:id", id=finding)
-    return picture
+    return db.execute("SELECT * FROM pictures WHERE id=:id", id=other_id)
 
 
 def delete(picture, id):
@@ -210,7 +211,7 @@ def inform_match(id, other_id):
     message_1 = 'Subject: {}\n\n{}'.format(subject, text_1)
     message_2 = 'Subject: {}\n\n{}'.format(subject, text_2)
 
-    # log into emailaccount
+    # Logs into email account
     server.login("collabstudiohelpdesk@gmail.com", "webikcollab")
 
     # Sends each message to the corresponding user
@@ -250,14 +251,14 @@ def retrieve_password(username, email):
     # Retrieves info for username and checks if username exists
     rows = db.execute("SELECT * FROM users WHERE username=:username", username=username)
     if not rows:
-         return 0
+         return "error_username"
 
     # Sends email if email is correct
     else:
 
         # Checks if email is correct and return error code
         if email != rows[0]["email"]:
-            return 1
+            return "error_email"
 
         else:
             # Generates a new password
@@ -310,7 +311,7 @@ def chat(id,other_id,message):
 def pair(id, other_id):
     """Adds a new pair to the pairs database"""
 
-    # stores information of both id's in seperate variables
+    # Stores information of both id's in seperate variables
     user1 = db.execute("SELECT * FROM users WHERE id=:id", id=id)
     user2 = db.execute("SELECT * FROM users WHERE id=:other_id", other_id=other_id)
 
@@ -322,14 +323,6 @@ def pair(id, other_id):
 
     # Inserts a pair with id = user_2 and other_id = user_1
     db.execute("INSERT INTO pairs (id, username, other_id, other_username) VALUES \
-<<<<<<< HEAD
-            (:id, :username, :other_id, :other_username)", id=user2[0]["id"], \
-            username=user2[0]["username"], other_id=user1[0]["id"], \
-            other_username=user1[0]["username"])
-
-    return True
-=======
-    (:id, :username, :other_id, :other_username)", id=user2[0]["id"], username=user2[0]["username"] \
-    , other_id=user1[0]["id"], other_username=user1[0]["username"])
-    return True
->>>>>>> be239514c1d58965c76f53600fc955b5599cabfd
+                (:id, :username, :other_id, :other_username)", id=user2[0]["id"], \
+                username=user2[0]["username"], other_id=user1[0]["id"], \
+                other_username=user1[0]["username"])
