@@ -248,8 +248,8 @@ def accountroute():
                 return apology("account.html", "can't send email to that emailadress")
 
         # Change personal information, return an errorcode in case of a problem
-        errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
-                    request.form.get("password"), request.form.get("confirmpassword"), \
+        errorcode = account(request.form.get("fullname"), request.form.get("old_password"), \
+                    request.form.get("password"), request.form.get("confirm_password"), \
                     request.form.get("email"), request.form.get("work"), request.form.get("search"), \
                     request.form.get("extra_search"))
 

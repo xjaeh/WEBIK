@@ -250,7 +250,7 @@ def retrieve_password(username, email):
             subject = "New Password"
 
             with open("email_templates/new_password.txt", "r") as mail:
-                text = str(mail.read()).format(fullname, password)
+                text = str(mail.read()).format(username, password)
 
             message = 'Subject: {}\n\n{}'.format(subject, text)
 
