@@ -178,7 +178,7 @@ def inform_match(id, other_id):
 
     # Selects user and match information
     user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
+    match_info = db.execute("SELECT * FROM users WHERE id=:other_id", other_id=other_id)
 
     # Sets up emailserver
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
@@ -207,19 +207,16 @@ def status_check(id, other_id):
     """Checks if two id's have a match"""
 
     # Selects the two statuses
-    status1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=id, other_id=other_id)
-    status2 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=other_id, other_id=id)
+    status_1 = db.execute("SELECT status FROM matchstatus WHERE id=:id and other_id=:other_id", id=id, other_id = other_id)
+    status_2 = db.execute("SELECT status FROM matchstatus WHERE id=:other_id and other_id=:id", other_id = other_id, id=id)
 
     # Returns True or False depending upon mutual like or not
-    try:
-        status1[0]["status"] == "true" and status2[0]["status"] == "true"
-        return True
+    if len(status_1) == 0 or len(status_2) == 0:
+        return False
 
-        other_username = db.execute("SELECT username FROM users WHERE id=:other_id", id=other_id)
-        db.execute("INSERT INTO pairs (id, other_id, other_username) VALUES (:id, :other_id, :other_username)", \
-                    id=id, other_id=other_id, other_username=other_username)
-        inform_match(id, other_id)
-    except:
+    elif status_1[0]["status"] == "true" or status_2[0]["status"] == "true":
+        return True
+    else:
         return False
 
 def password_generator(chars=string.ascii_uppercase + string.digits):
