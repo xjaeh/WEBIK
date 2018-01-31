@@ -170,6 +170,37 @@ def status_update(id,other_id,status):
     db.execute("INSERT INTO matchstatus (id, other_id, status) VALUES (:id, :other_id, :status)",\
                 id=id, other_id=other_id, status=status)
 
+
+def inform_match(id, other_id):
+    """Sends new password to user and his/her match in case of a match"""
+
+    # Selects user and match information
+    user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
+    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
+
+    # Sets up emailserver
+    server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+
+    # Creates a seperate  email for each person
+    subject = "You got a match"
+
+    with open("email_templates/match.txt", "r") as mail:
+        text_1 = str(mail.read()).format(user_info[0]["fullname"], match_info[0]["fullname"], match_info[0]["fullname"])
+        text_2 = str(mail.read()).format(match_info[0]["fullname"], user_info[0]["fullname"], user_info[0]["fullname"])
+
+    message_1 = 'Subject: {}\n\n{}'.format(subject, text_1)
+    message_2 = 'Subject: {}\n\n{}'.format(subject, text_2)
+
+    # log into emailaccount
+    server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
+
+    # Sends each message to the corresponding user
+    server.sendmail("tistacyhelpdesk@gmail.com", user_info[0]["email"], message_1)
+    server.sendmail("tistacyhelpdesk@gmail.com", match_info[0]["email"], message_2)
+
+    return True
+
+
 def status_check(id, other_id):
     """Checks if two id's have a match"""
 
@@ -228,35 +259,6 @@ def retrieve_password(username, email):
             server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
             server.sendmail("tistacyhelpdesk@gmail.com", email, message)
 
-
-def inform_match(id, other_id):
-    """Sends new password to user and his/her match in case of a match"""
-
-    # Selects user and match information
-    user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
-
-    # Sets up emailserver
-    server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
-
-    # Creates a seperate  email for each person
-    subject = "You got a match"
-
-    with open("email_templates/match.txt", "r") as mail:
-        text_1 = str(mail.read()).format(user_info[0]["fullname"], match_info[0]["fullname"], match_info[0]["fullname"])
-        text_2 = str(mail.read()).format(match_info[0]["fullname"], user_info[0]["fullname"], user_info[0]["fullname"])
-
-    message_1 = 'Subject: {}\n\n{}'.format(subject, text_1)
-    message_2 = 'Subject: {}\n\n{}'.format(subject, text_2)
-
-    # log into emailaccount
-    server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-
-    # Sends each message to the corresponding user
-    server.sendmail("tistacyhelpdesk@gmail.com", user_info[0]["email"], message_1)
-    server.sendmail("tistacyhelpdesk@gmail.com", match_info[0]["email"], message_2)
-
-    return True
 
 
 def contacts(id):
