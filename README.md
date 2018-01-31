@@ -1,7 +1,12 @@
 # Collab Studio
 ### Maud van Bergen, Jenny Heddes en Jasper de Lange
 
+![Screenshot](static/img/homepage.png)
+![Screenshot](static/img/workspace.png)
+![Screenshot](static/img/profile.png)
 ![Screenshot](static/img/find.png)
+![Screenshot](static/img/chat.png)
+
 
 ## features:
 
