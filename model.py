@@ -178,7 +178,7 @@ def inform_match(id, other_id):
 
     # Selects user and match information
     user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    match_info = db.execute("SELECT * FROM users WHERE id=:other_id", other_id=other_id)
+    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
 
     # Sets up emailserver
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
@@ -213,7 +213,6 @@ def status_check(id, other_id):
     # Returns True or False depending upon mutual like or not
     if len(status_1) == 0 or len(status_2) == 0:
         return False
-
     elif status_1[0]["status"] == "true" or status_2[0]["status"] == "true":
         return True
     else:
