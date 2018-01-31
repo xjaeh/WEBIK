@@ -43,17 +43,15 @@
                     <div class="collapse navbar-collapse" id="navbar">
                         {% if session.user_id %}
                             <ul class="nav navbar-nav ">
-                                <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
+                                <li><a href="{{ url_for('workspaceroute') }}"> Workspace </a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a href="{{ url_for('workspaceroute') }}"> Workspace </a></li>
+                                <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
                                 <li><a href="{{ url_for('logoutroute') }}">Log Out</a></li>
                             </ul>
                         {% else %}
-                             <ul class="nav navbar-nav ">
-                                <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
-                            </ul>
                             <ul class="nav navbar-nav navbar-right">
+                                <li><a href="{{ url_for('howitworksroute') }}">How it works</a></li>
                                 <li><a href="{{ url_for('loginroute') }}">Log In</a></li>
                             </ul>
                         {% endif %}

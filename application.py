@@ -186,6 +186,7 @@ def findroute():
         check = status_check(id,finding)
         if check == True:
             # sends email in case of match
+            pair(id,finding)
             inform_match(id,finding)
         return redirect(url_for("findroute"))
 
@@ -316,7 +317,6 @@ def deleteroute():
     else:
         return render_template("delete.html", rows = selection)
 
-
 @app.route("/forgotpassword", methods=["GET", "POST"])
 def forgotpasswordroute():
     """Allows the user to request a new password"""
@@ -370,12 +370,12 @@ def chatroute():
             elif request.form.get(item):
                 session["other_id"] = item
         other_id = session.get("other_id")
-
         if request.form.get("message"):
             message = request.form.get("message")
             chat(id, other_id, message)
         messages = conversation(id, other_id)
-        return redirect(url_for("chatroute"))
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
+
 
     else:
         try:
@@ -387,4 +387,4 @@ def chatroute():
         other_id = session.get("other_id")
         messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=other_id)
+        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
