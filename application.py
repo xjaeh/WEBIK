@@ -242,24 +242,18 @@ def accountroute():
 
                 message = 'Subject: {}\n\n{}'.format(subject, text)
 
-                server.login("tistacyhelpdesk@gmail.com", "webiktistacy")
-                server.sendmail("tistacyhelpdesk@gmail.com", email, message)
+                server.login("collabstudiohelpdesk@gmail.com", "webikcollab")
+                server.sendmail("collabstudiohelpdesk@gmail.com", email, message)
 
             except:
                 return apology("account.html", \
                 "Can't send email to that email adress")
 
         # Change personal information, return an errorcode in case of a problem
-<<<<<<< HEAD
         errorcode = account(request.form.get("fullname"), \
                     request.form.get("old_password"),request.form.get("password"), \
                     request.form.get("confirm_password"), request.form.get("email"), \
                     request.form.get("work"), request.form.get("search"), \
-=======
-        errorcode = account(request.form.get("fullname"), request.form.get("old_password"), \
-                    request.form.get("password"), request.form.get("confirm_password"), \
-                    request.form.get("email"), request.form.get("work"), request.form.get("search"), \
->>>>>>> be239514c1d58965c76f53600fc955b5599cabfd
                     request.form.get("extra_search"))
 
         # Tell user what error occured
