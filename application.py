@@ -165,7 +165,7 @@ def findroute():
     # Initialize variables
     status = "temporary"
     id = session.get("user_id")
-    finding=find(id)
+    finding = find(id)
 
     # If user reaches route via POST
     if request.method == "POST":
