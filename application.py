@@ -47,7 +47,7 @@ def registerroute():
         session["username"] = request.form.get("username")
         session["fullname"] = request.form.get("fullname")
         session["email"] = request.form.get("email")
-        session["am"] = request.form.get("amwork")
+        session["am"] = request.form.get("work")
         session["look"] = request.form.get("search")
         session["extra"] = request.form.get("extra_search")
 
@@ -286,8 +286,10 @@ def uploadroute():
         # Saves filename from url or from a local file
         if request.form.get("url"):
             filename = request.form.get("url")
-        else:
+        elif request.files["photo"]:
             filename = photos.save(request.files['photo'])
+        else:
+            return apology("upload.html", "please select a photo")
 
         # Function that saves filename to database
         upload(filename, id)

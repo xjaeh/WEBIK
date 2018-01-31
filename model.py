@@ -136,11 +136,13 @@ def find(id):
     possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
-    already_seen= db.execute("SELECT other_id FROM matchstatus WHERE id=:id", id=id)
+    already_seen = db.execute("SELECT other_id FROM matchstatus WHERE id=:id", id=id)
     already_seen_set= set(already["other_id"] for already in already_seen)
+    already_reject = db.execute("SELECT id FROM matchstatus WHERE other_id=:id AND status=:status", id=id, status="false")
+    already_reject_set= set(already["id"] for already in already_reject)
 
     # Returns a user id from possible_matches minus the ones already seen
-    show = possible_matches_set - already_seen_set
+    show = possible_matches_set - already_seen_set - already_reject_set
     shows = [id for id in show]
     if shows == []:
         return 'empty'
