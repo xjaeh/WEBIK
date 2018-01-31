@@ -66,7 +66,7 @@
                     <div class="dropdown" >
                       <select name="extra_search" class="form-control">
                         {% if session.get("extra") %} <option value = {{session.get("extra")}}> {{session.get("extra")}} </option> {% endif %}
-                        <option value="Optional">Optional extra search request</option>
+                        <option value="Optional"> Extra search request</option>
                         {% if session.get("extra") != "Photographer" %} <option value="Photographer">Photographer</option> {% endif %}
                         {% if session.get("extra") != "Model" %} <option value="Model">Model</option> {% endif %}
                         {% if session.get("extra") != "Mua(h)" %} <option value="Mua(h)">Mua(h)</option> {% endif %}

@@ -186,7 +186,7 @@ def findroute():
         check = status_check(id,finding)
         if check == True:
             # sends email in case of match
-            pair(id,finding)
+            pairs(id,finding)
             inform_match(id,finding)
         return redirect(url_for("findroute"))
 
@@ -249,8 +249,8 @@ def accountroute():
                 return apology("account.html", "can't send email to that emailadress")
 
         # Change personal information, return an errorcode in case of a problem
-        errorcode = account(request.form.get("fullname"), request.form.get("old password"), \
-                    request.form.get("password"), request.form.get("confirmpassword"), \
+        errorcode = account(request.form.get("fullname"), request.form.get("old_password"), \
+                    request.form.get("password"), request.form.get("confirm_password"), \
                     request.form.get("email"), request.form.get("work"), request.form.get("search"), \
                     request.form.get("extra_search"))
 
@@ -374,8 +374,8 @@ def chatroute():
             message = request.form.get("message")
             chat(id, other_id, message)
         messages = conversation(id, other_id)
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
-
+        return render_template("chat.html", contacts=contact,messages=messages, \
+                                id=id, other_id=int(other_id))
 
     else:
         try:
@@ -387,4 +387,5 @@ def chatroute():
         other_id = session.get("other_id")
         messages = conversation(id, other_id)
 
-        return render_template("chat.html", contacts=contact,messages=messages, id=id, other_id=int(other_id))
+        return render_template("chat.html", contacts=contact,messages=messages, \
+                                id=id, other_id=int(other_id))
