@@ -318,7 +318,7 @@ def uploadroute():
 def deleteroute():
     """Allows the user to delete a picture from his/her profile"""
 
-    #initialise variables
+    # Initialise variables
     id = session.get("user_id")
     picture = request.form.get("delete")
     selection = select(id)
@@ -381,7 +381,7 @@ def chatroute():
         # Create a list of all id's of all users the user matched with
         ids=[str(person["other_id"]) for person in contact]
 
-        # if the user clicked on the "info" in a chatroom, render that user's profile
+        # If the user clicked on the "info" in a chatroom, render that user's profile
         for item in ids:
             if request.form.get(item) == "Info":
                 fullname = profile_fullname(int(item))
@@ -399,7 +399,7 @@ def chatroute():
             chat(id, other_id, message)
         messages = conversation(id, other_id)
 
-        # refreshes the chat
+        # Refreshes the chat
         return render_template("chat.html", contacts=contact,messages=messages, \
                                 id=id, other_id=int(other_id))
 
@@ -408,7 +408,7 @@ def chatroute():
         # Open chatroom on first contact in contact
         try:
             other_id = contact[0]["other_id"]
-        # if user has no contacts, render chat2.html
+        # If user has no contacts, render chat2.html
         except:
             return render_template("chat2.html")
 
