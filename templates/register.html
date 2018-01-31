@@ -63,12 +63,22 @@
             <div class="form-group" width=100%>
                     <div class="dropdown" >
                       <select name="extra_search" class="form-control">
+<<<<<<< HEAD
                         <option value="Optional">Extra search request</option>
                         <option value="Photographer">Photographer</option>
                         <option value="Model">Model</option>
                         <option value="Mua(h)">Mua(h)</option>
                         <option value="Producer">Producer</option>
                         <option value="Stylist">Stylist</option>
+=======
+                        {% if session.get("extra") %} <option value = {{session.get("extra")}}> {{session.get("extra")}} </option> {% endif %}
+                        <option value="Optional"> Extra search request</option>
+                        {% if session.get("extra") != "Photographer" %} <option value="Photographer">Photographer</option> {% endif %}
+                        {% if session.get("extra") != "Model" %} <option value="Model">Model</option> {% endif %}
+                        {% if session.get("extra") != "Mua(h)" %} <option value="Mua(h)">Mua(h)</option> {% endif %}
+                        {% if session.get("extra") != "Producer" %} <option value="Producer">Producer</option> {% endif %}
+                        {% if session.get("extra") != "Stylist" %} <option value="Stylist">Stylist</option> {% endif %}
+>>>>>>> be239514c1d58965c76f53600fc955b5599cabfd
                       </select>
                         <br
 

@@ -146,11 +146,13 @@ def find(id):
     possible_matches_set = set(match["id"] for match in possible_matches)
 
     # Selects all the users which are already seen by the user
-    already_seen= db.execute("SELECT other_id FROM matchstatus WHERE id=:id", id=id)
+    already_seen = db.execute("SELECT other_id FROM matchstatus WHERE id=:id", id=id)
     already_seen_set= set(already["other_id"] for already in already_seen)
+    already_reject = db.execute("SELECT id FROM matchstatus WHERE other_id=:id AND status=:status", id=id, status="false")
+    already_reject_set= set(already["id"] for already in already_reject)
 
     # Returns a user id from possible_matches minus the ones already seen
-    show = possible_matches_set - already_seen_set
+    show = possible_matches_set - already_seen_set - already_reject_set
     shows = [id for id in show]
     if shows == []:
         return 'empty'
@@ -190,7 +192,7 @@ def inform_match(id, other_id):
 
     # Selects user and match information
     user_info = db.execute("SELECT * FROM users WHERE id=:id", id=id)
-    match_info = db.execute("SELECT * FROM users WHERE id=:other_id", other_id=other_id)
+    match_info = db.execute("SELECT * FROM users WHERE id=:id", id=other_id)
 
     # Sets up emailserver
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
@@ -230,7 +232,6 @@ def status_check(id, other_id):
     # Returns True or False depending upon mutual like or not
     if len(status_1) == 0 or len(status_2) == 0:
         return False
-
     elif status_1[0]["status"] == "true" or status_2[0]["status"] == "true":
         return True
     else:
@@ -321,8 +322,14 @@ def pair(id, other_id):
 
     # Inserts a pair with id = user_2 and other_id = user_1
     db.execute("INSERT INTO pairs (id, username, other_id, other_username) VALUES \
+<<<<<<< HEAD
             (:id, :username, :other_id, :other_username)", id=user2[0]["id"], \
             username=user2[0]["username"], other_id=user1[0]["id"], \
             other_username=user1[0]["username"])
 
     return True
+=======
+    (:id, :username, :other_id, :other_username)", id=user2[0]["id"], username=user2[0]["username"] \
+    , other_id=user1[0]["id"], other_username=user1[0]["username"])
+    return True
+>>>>>>> be239514c1d58965c76f53600fc955b5599cabfd

@@ -250,10 +250,16 @@ def accountroute():
                 "Can't send email to that email adress")
 
         # Change personal information, return an errorcode in case of a problem
+<<<<<<< HEAD
         errorcode = account(request.form.get("fullname"), \
                     request.form.get("old_password"),request.form.get("password"), \
                     request.form.get("confirm_password"), request.form.get("email"), \
                     request.form.get("work"), request.form.get("search"), \
+=======
+        errorcode = account(request.form.get("fullname"), request.form.get("old_password"), \
+                    request.form.get("password"), request.form.get("confirm_password"), \
+                    request.form.get("email"), request.form.get("work"), request.form.get("search"), \
+>>>>>>> be239514c1d58965c76f53600fc955b5599cabfd
                     request.form.get("extra_search"))
 
         # Tell user what error occured
@@ -293,8 +299,10 @@ def uploadroute():
         # Saves filename from url or from a local file
         if request.form.get("url"):
             filename = request.form.get("url")
-        else:
+        elif request.files["photo"]:
             filename = photos.save(request.files['photo'])
+        else:
+            return apology("upload.html", "please select a photo")
 
         # Function that saves filename to database
         upload(filename, id)
@@ -390,6 +398,7 @@ def chatroute():
             message = request.form.get("message")
             chat(id, other_id, message)
         messages = conversation(id, other_id)
+
         # refreshes the chat
         return render_template("chat.html", contacts=contact,messages=messages, \
                                 id=id, other_id=int(other_id))
